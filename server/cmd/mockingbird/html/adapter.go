@@ -1,6 +1,6 @@
 package html
 
-import "github.com/unders/mockingbird/cmd/domain/mockinbird"
+import "github.com/unders/mockingbird/server/domain/mockinbird"
 
 // Adapter implements the mockingbird.HTMLAdapter interface
 //

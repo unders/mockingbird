@@ -1,6 +1,6 @@
 package mock
 
-import "github.com/unders/mockingbird/cmd/domain/mockinbird"
+import "github.com/unders/mockingbird/server/domain/mockinbird"
 
 // HTMLAdapter is used for tests
 type HTMLAdapter struct {

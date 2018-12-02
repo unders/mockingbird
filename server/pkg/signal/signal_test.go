@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/unders/mockingbird/cmd/pkg/testdata"
+	"github.com/unders/mockingbird/server/pkg/testdata"
 )
 
 func waitSig(t *testing.T, c <-chan os.Signal, sig os.Signal) {

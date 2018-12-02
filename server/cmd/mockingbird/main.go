@@ -12,9 +12,9 @@ import (
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/b3"
 
-	"github.com/unders/mockingbird/cmd/domain/mockinbird"
-	"github.com/unders/mockingbird/cmd/mockingbirdsvc/mock"
-	"github.com/unders/mockingbird/cmd/pkg/signal"
+	"github.com/unders/mockingbird/server/cmd/mockingbird/mock"
+	"github.com/unders/mockingbird/server/domain/mockinbird"
+	"github.com/unders/mockingbird/server/pkg/signal"
 )
 
 //

@@ -6,9 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/unders/mockingbird/cmd/pkg/testdata"
-
-	"github.com/unders/mockingbird/cmd/pkg/rest"
+	"github.com/unders/mockingbird/server/pkg/rest"
+	"github.com/unders/mockingbird/server/pkg/testdata"
 )
 
 func TestMatcher_NewRoute_WithNamespaceAndPrefix(t *testing.T) {

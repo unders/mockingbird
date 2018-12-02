@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/unders/mockingbird/cmd/domain/mockinbird"
+	"github.com/unders/mockingbird/server/domain/mockinbird"
 )
 
 // Options defined required fields for mockingbird

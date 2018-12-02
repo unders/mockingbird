@@ -1,5 +1,5 @@
 steps:
 - name: 'unders/mage'
-  args: ['test:cmd']
+  args: ['server:all']
   env: ['PROJECT_ROOT=github.com/unders/mockingbird', 'GO111MODULE=on']
   dir: './tool'

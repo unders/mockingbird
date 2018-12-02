@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/unders/mockingbird/cmd/domain/mockinbird"
-	"github.com/unders/mockingbird/cmd/pkg/rest"
+	"github.com/unders/mockingbird/server/domain/mockinbird"
+	"github.com/unders/mockingbird/server/pkg/rest"
 )
 
 type Handler struct {

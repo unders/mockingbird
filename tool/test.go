@@ -10,39 +10,38 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
-type Test mg.Namespace
-type Cmd mg.Namespace
+type Server mg.Namespace
 
-// Cmd runs  all CMD targets
-func (Test) Cmd() {
+// All runs all server targets
+func (Server) All() {
 	mg.SerialDeps(
 		Go.Version,
-		Cmd.download,
-		Cmd.Test,
-		Cmd.Race,
+		Server.download,
+		Server.Test,
+		Server.Race,
 	)
 }
 
 // Test runs: go test github.com/unders/mockingbird/cmd/...
-func (Cmd) Test() error {
-	mg.SerialDeps(Cmd.download)
-	return sh.RunV("go", "test", "./cmd/...")
+func (Server) Test() error {
+	mg.SerialDeps(Server.download)
+	return sh.RunV("go", "test", "./server/...")
 }
 
 // Race runs: go test github.com/unders/mockingbird/cmd/...
-func (Cmd) Race() error {
-	mg.SerialDeps(Cmd.download)
-	return sh.RunV("go", "test", "-race", "./cmd/...")
+func (Server) Race() error {
+	mg.SerialDeps(Server.download)
+	return sh.RunV("go", "test", "-race", "./server/...")
 }
 
 //
 // Private commands
 //
-func (Cmd) download() error {
-	mg.SerialDeps(Cmd.root)
+func (Server) download() error {
+	mg.SerialDeps(Server.root)
 	return sh.Run("go", "mod", "download")
 }
 
-func (Cmd) root() error {
+func (Server) root() error {
 	return os.Chdir("../")
 }

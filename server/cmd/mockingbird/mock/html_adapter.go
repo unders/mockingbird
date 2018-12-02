@@ -1,6 +1,11 @@
 package mock
 
-import "github.com/unders/mockingbird/server/domain/mockinbird"
+import (
+	"fmt"
+
+	"github.com/magefile/mage/sh"
+	"github.com/unders/mockingbird/server/domain/mockinbird"
+)
 
 // HTMLAdapter is used for tests
 type HTMLAdapter struct {
@@ -25,7 +30,8 @@ func (a HTMLAdapter) Dashboard() (code int, body []byte, err error) {
 
 // Dashboard starts a test suite
 func (a HTMLAdapter) RunTest(environment string) (id int, err error) {
-	return a.Code, a.Err
+
+	return a.Code, err
 }
 
 // ShowTestResult returns the ShowTestResult page
@@ -35,7 +41,13 @@ func (a HTMLAdapter) ShowTestResult(environment string, id int) (code int, body 
 
 // ListTestResults returns the ListTestResults page
 func (a HTMLAdapter) ListTestResults(env string) (code int, body []byte, err error) {
-	return a.Code, a.Body, a.Err
+	// FIXME: This should be removed, just testing the concept.
+	result, err := sh.Output("mage", "-v", "test:all")
+
+	status := sh.ExitStatus(err)
+
+	fmt.Printf("result: %s\nStatus: %d", result, status)
+	return a.Code, []byte(result), a.Err
 }
 
 // RunTestForService starts a test suite for a service

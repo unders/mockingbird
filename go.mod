@@ -5,6 +5,7 @@ require (
 	git.apache.org/thrift.git v0.0.0-20181129202844-2c69b5a01e58 // indirect
 	github.com/golang/lint v0.0.0-20181026193005-c67002cb31c3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.5.1 // indirect
+	github.com/magefile/mage v1.7.1
 	github.com/openzipkin/zipkin-go v0.1.3 // indirect
 	github.com/pkg/errors v0.8.0
 	github.com/prometheus/client_golang v0.9.1 // indirect

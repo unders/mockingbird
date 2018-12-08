@@ -2,19 +2,19 @@
 
 Mockingbird is a system testing framework built for the serverless world.
 
-## Project Setup
+## Setup
 
 ### Prerequisite
  * `Go`
  * `Git`
 
-#### Install mage
+### Install mage build tool
 ```
 ./tool/mage-install.sh
 ```
 
 ## Usage
-To see possible commands:
+
 ```
 cd tool
 mage

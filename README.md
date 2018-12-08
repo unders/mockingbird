@@ -2,6 +2,20 @@
 
 Mockingbird is a system testing framework built for the serverless world.
 
+### Bootstrap
+
+#### Prerequisite
+`Go` and `Git` must be install.
+
+#### Install mage
+Run command:
+```
+./tool/install-mage.sh
+```
+It installs `mage`.
+
+### API
+
 ```
 GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
 GET  http://localhost:8080/v1/dashboard

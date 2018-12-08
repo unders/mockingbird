@@ -65,15 +65,22 @@ func (a HTMLAdapter) HasServiceError(env string) error {
 
 // ErrorNotFound returns error not found page
 func (a HTMLAdapter) ErrorNotFound() (code int, body []byte) {
-	return a.Code, a.Body
+	b := append(a.Body, "Not Found"...)
+	return a.Code, b
 }
 
 // ErrorClient returns an error page when client has made an error
 func (a HTMLAdapter) ErrorClient(title, description string) (code int, body []byte) {
-	return a.Code, a.Body
+	b := append(a.Body, "Error Client"...)
+	b = append(b, " title: "...)
+	b = append(b, title...)
+	b = append(b, " description: "...)
+	b = append(b, description...)
+	return a.Code, b
 }
 
 // ErrorServer returns an error page when server has an error
 func (a HTMLAdapter) ErrorServer() (code int, body []byte) {
-	return a.Code, a.Body
+	b := append(a.Body, "Error Server"...)
+	return a.Code, b
 }

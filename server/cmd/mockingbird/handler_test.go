@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/unders/mockingbird/server/pkg/testdata"
@@ -13,7 +14,7 @@ import (
 )
 
 // ******* GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
-// GET  http://localhost:8080/v1/dashboard
+// ******* GET  http://localhost:8080/v1/dashboard
 //
 // POST http://localhost:8080/v1/tests/
 // GET  http://localhost:8080/v1/tests/{ID}
@@ -23,7 +24,8 @@ import (
 
 func TestAPI(t *testing.T) {
 	t.Run("GET  /  RedirectsTo  /v1/dashboard", rootPathRedirectsToDashboard)
-	t.Run("GET  /v1/dashboard  Returns Dashboard Page", dashboard)
+	t.Run("GET  /v1/dashboard  Returns Dashboard Page", getDashboard)
+	t.Run("POST  /v1/dashboard  Returns Route Not Found  Error Page", postDashboard)
 }
 
 func testServer(t *testing.T, code int, body string) *httptest.Server {
@@ -78,7 +80,7 @@ func rootPathRedirectsToDashboard(t *testing.T) {
 	}
 }
 
-func dashboard(t *testing.T) {
+func getDashboard(t *testing.T) {
 	ts := testServer(t, 200, "")
 	defer ts.Close()
 
@@ -110,6 +112,48 @@ func dashboard(t *testing.T) {
 
 			if !reflect.DeepEqual(tc.wantBody, b) {
 				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
+			}
+		})
+	}
+}
+
+func postDashboard(t *testing.T) {
+	ts := testServer(t, 200, "Error: ")
+	defer ts.Close()
+
+	testCases := []struct {
+		URL            string
+		wantCode       int
+		wantBody       []byte
+		wantRequestURL string
+	}{
+		{
+			URL:            ts.URL + "/v1/dashboard",
+			wantCode:       http.StatusBadRequest,
+			wantBody:       []byte("Error: Not Found"),
+			wantRequestURL: "/v1/dashboard",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
+			testdata.AssertNil(t, err)
+			defer resp.Body.Close()
+
+			if tc.wantCode != resp.StatusCode {
+				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
+			}
+
+			b, err := ioutil.ReadAll(resp.Body)
+			testdata.AssertNil(t, err)
+			if !reflect.DeepEqual(tc.wantBody, b) {
+				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
+			}
+
+			got := resp.Request.URL.RequestURI()
+			if tc.wantRequestURL != got {
+				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
 			}
 		})
 	}

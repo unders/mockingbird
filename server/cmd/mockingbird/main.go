@@ -21,9 +21,9 @@ import (
 // From the build script
 //
 var (
-	Version    = "Version"
-	Buildstamp = "Buildstamp"
-	Githash    = "Githash"
+	timestamp  = "timestamp"
+	commitHash = "commitHash"
+	gitTag     = "gitTag"
 )
 
 func options() Options {
@@ -33,9 +33,9 @@ func options() Options {
 
 	l := log.New(os.Stderr, "", 0)
 	return Options{
-		Version:    Version,
-		Buildstamp: Buildstamp,
-		Githash:    Githash,
+		Timestamp:  timestamp,
+		CommitHash: commitHash,
+		GitTag:     gitTag,
 
 		ServerAddr:              addr,
 		ServerReadHeaderTimeout: 30 * time.Second,  // 30s
@@ -59,8 +59,8 @@ func main() {
 func run(o Options) error {
 	l := o.Log
 
-	format := "mockingbird server is starting version=%s start-time=%s"
-	l.Info(fmt.Sprintf(format, o.Version, o.StartTime.Format(time.RFC3339)))
+	format := "mockingbird server is starting commit-hash=%s build-time=%s start-time=%s "
+	l.Info(fmt.Sprintf(format, o.CommitHash, o.Timestamp, o.StartTime.Format(time.RFC3339)))
 	format = "Options%+v"
 	l.Info(fmt.Sprintf(format, o))
 
@@ -83,8 +83,8 @@ func run(o Options) error {
 		ErrorLog:          o.ErrorLog,
 	}
 
-	format = "mockingbird listens on addr %s version=%s run-time=%s"
-	l.Info(fmt.Sprintf(format, o.ServerAddr, o.Version, time.Since(o.StartTime)))
+	format = "mockingbird listens on addr %s commit-hash=%s run-time=%s"
+	l.Info(fmt.Sprintf(format, o.ServerAddr, o.CommitHash, time.Since(o.StartTime)))
 
 	errCh := make(chan error, 1)
 	go func() { errCh <- srv.ListenAndServe() }()
@@ -92,26 +92,26 @@ func run(o Options) error {
 	var err error
 	select {
 	case err = <-errCh:
-		const format = "server error=%s version=%s run-time=%s"
-		l.Error(fmt.Sprintf(format, err, o.Version, time.Since(o.StartTime)))
+		const format = "server error=%s commit-hash=%s run-time=%s"
+		l.Error(fmt.Sprintf(format, err, o.CommitHash, time.Since(o.StartTime)))
 	case sig := <-signal.Interrupt():
-		const format = "got interrupt signal=%s version=%s run-time=%s"
-		l.Info(fmt.Sprintf(format, sig, o.Version, time.Since(o.StartTime)))
+		const format = "got interrupt signal=%s commit-hash=%s run-time=%s"
+		l.Info(fmt.Sprintf(format, sig, o.CommitHash, time.Since(o.StartTime)))
 	}
 
 	stopTime := time.Now().UTC()
 	waitTimeout := o.ServerShutdownTimeout
-	format = "shutting down the http server version=%s wait-timeout=%s run-time=%s"
-	l.Info(fmt.Sprintf(format, o.Version, waitTimeout, time.Since(o.StartTime)))
+	format = "shutting down the http server commit-hash=%s wait-timeout=%s run-time=%s"
+	l.Info(fmt.Sprintf(format, o.CommitHash, waitTimeout, time.Since(o.StartTime)))
 	ctx, cancel := context.WithTimeout(context.Background(), waitTimeout)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		const format = "server shutdown error=%s version=%s shutdown-time=%s"
-		l.Error(fmt.Sprintf(format, err, o.Version, time.Since(stopTime)))
+		const format = "server shutdown error=%s commit-hash=%s shutdown-time=%s"
+		l.Error(fmt.Sprintf(format, err, o.CommitHash, time.Since(stopTime)))
 	}
 
-	format = "mockingbird server is stopped version=%s shutdown-time=%s run-time=%s"
-	l.Info(fmt.Sprintf(format, o.Version, time.Since(stopTime), time.Since(o.StartTime)))
+	format = "mockingbird server is stopped commit-hash=%s shutdown-time=%s run-time=%s"
+	l.Info(fmt.Sprintf(format, o.CommitHash, time.Since(stopTime), time.Since(o.StartTime)))
 
 	return err
 }

@@ -2,19 +2,25 @@
 
 Mockingbird is a system testing framework built for the serverless world.
 
-### Bootstrap
+## Project Setup
 
-#### Prerequisite
-`Go` and `Git` must be install.
+### Prerequisite
+ * `Go`
+ * `Git`
 
 #### Install mage
-Run command:
 ```
-./tool/install-mage.sh
+./tool/mage-install.sh
 ```
-It installs `mage`.
 
-### API
+## Usage
+To see possible commands:
+```
+cd tool
+mage
+```
+
+## API
 
 ```
 GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
@@ -29,12 +35,12 @@ POST http://localhost:8080/v1/tests/-/services/<service>
 ```
 
 
-### Opencensus
+## Opencensus
 * [guide for client](https://opencensus.io/guides/http/go/net_http/client/)
 * [guide for server](https://opencensus.io/guides/http/go/net_http/server/)
 * [Go tracing](https://opencensus.io/quickstart/go/tracing/)
 * [xray exporter](https://opencensus.io/exporters/supported-exporters/go/xray/)
 * [stackdriver exporter](https://opencensus.io/exporters/supported-exporters/go/stackdriver/)
 
-### References
+## References
 * [rest and long running jobs](https://farazdagi.com/2014/rest-and-long-running-jobs/)

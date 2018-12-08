@@ -17,14 +17,15 @@ type Handler struct {
 	Log  mockingbird.Log
 }
 
-// GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
-// GET  http://localhost:8080/v1/dashboard
-// POST http://localhost:8080/v1/environment/{env}/tests/
-// GET  http://localhost:8080/v1/environment/{env}/tests/{ID}
-// GET  http://localhost:8080/v1/environment/{env}/tests/
-// GET  http://localhost:8080/v1/environment/{env}/tests/?service=sim-management
+//GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
+//GET  http://localhost:8080/v1/dashboard
+//
+//POST http://localhost:8080/v1/tests/
+//GET  http://localhost:8080/v1/tests/{ID}
+//GET  http://localhost:8080/v1/tests/?service=<service>
 
-// POST http://localhost:8080/v1/environment/{env}/tests/-/services/sim-management
+//POST http://localhost:8080/v1/tests/-/services/<service>
+
 func (h Handler) Make() http.Handler {
 	router := rest.Router{Namespaces: []string{"v1"}}
 
@@ -47,13 +48,13 @@ func (h Handler) Make() http.Handler {
 			http.Redirect(w, req, url, http.StatusSeeOther)
 		case rest.Route{Method: http.MethodGet, Path: "/v1/dashboard"}:
 			h.showDashboard(w, req)
-		case rest.Route{Method: http.MethodPost, Path: "/v1/environment/*/tests"}:
-			h.runTest(w, req, path)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/environment/*/tests/*"}:
+		case rest.Route{Method: http.MethodPost, Path: "/v1/tests"}:
+			h.runTest(w, req)
+		case rest.Route{Method: http.MethodGet, Path: "/v1/tests/*"}:
 			h.showTestResult(w, req, path)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/environment/*/tests"}:
+		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
 			h.listTestResults(w, req, path)
-		case rest.Route{Method: http.MethodPost, Path: "/v1/environment/*/tests/-/services/*"}:
+		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/-/services/*"}:
 			h.runTestForService(w, req, path)
 		default:
 			h.routeNotFound(w, req)
@@ -71,68 +72,45 @@ func (h *Handler) showDashboard(w http.ResponseWriter, req *http.Request) {
 	h.write(w, req, code, b, err)
 }
 
-func (h *Handler) runTest(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	env := path.String(2, "")
-	if err := h.HTML.HasEnvError(env); err != nil {
-		h.invalidEnvironment(w, req, env, err)
-		return
-	}
-
-	id, err := h.HTML.RunTest(env)
+func (h *Handler) runTest(w http.ResponseWriter, req *http.Request) {
+	id, err := h.HTML.RunTest()
 	if err != nil {
 		h.internalError(w, req, err)
 		return
 	}
 
-	http.Redirect(w, req, fmt.Sprintf("/v1/environment/%s/tests/%d", env, id), http.StatusSeeOther)
+	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%d", id), http.StatusSeeOther)
 }
 
 func (h *Handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	env := path.String(2, "")
-	if err := h.HTML.HasEnvError(env); err != nil {
-		h.invalidEnvironment(w, req, env, err)
-		return
-	}
-
-	id, err := path.Int(4)
+	id, err := path.Int(2)
 	if err != nil {
 		h.invalidID(w, req, id, err)
 		return
 	}
 
-	code, b, err := h.HTML.ShowTestResult(env, id)
+	code, b, err := h.HTML.ShowTestResult(id)
 	h.write(w, req, code, b, err)
 }
 
 func (h *Handler) listTestResults(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	env := path.String(2, "")
-	if err := h.HTML.HasEnvError(env); err != nil {
-		h.invalidEnvironment(w, req, env, err)
-		return
-	}
-	code, b, err := h.HTML.ListTestResults(env)
+	code, b, err := h.HTML.ListTestResults()
 	h.write(w, req, code, b, err)
 }
 
 func (h *Handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	env := path.String(2, "")
-	if err := h.HTML.HasEnvError(env); err != nil {
-		h.invalidEnvironment(w, req, env, err)
+	service := path.String(4, "")
+	if err := h.HTML.HasServiceError(service); err != nil {
+		h.invalidService(w, req, service, err)
 		return
 	}
-
-	service := path.String(6, "")
-	if err := h.HTML.HasServiceError(env); err != nil {
-		h.invalidEnvironment(w, req, env, err)
-		return
-	}
-	id, err := h.HTML.RunTestForService(env, service)
+	id, err := h.HTML.RunTestForService(service)
 	if err != nil {
 		h.internalError(w, req, err)
 		return
 	}
 
-	http.Redirect(w, req, fmt.Sprintf("/v1/environment/%s/tests/%d", env, id), http.StatusSeeOther)
+	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%d", id), http.StatusSeeOther)
 }
 
 //
@@ -150,16 +128,7 @@ func (h *Handler) invalidID(w http.ResponseWriter, req *http.Request, id int, er
 		fmt.Sprintf("ID %d is not a valid number", id),
 	)
 
-	h.write(w, req, http.StatusNotFound, b, err)
-}
-
-func (h *Handler) invalidEnvironment(w http.ResponseWriter, req *http.Request, env string, err error) {
-	_, b := h.HTML.ErrorClient(
-		"Not Found",
-		fmt.Sprintf("The environment %s does not exist.", env),
-	)
-
-	h.write(w, req, http.StatusNotFound, b, err)
+	h.write(w, req, http.StatusBadRequest, b, err)
 }
 
 func (h *Handler) invalidService(w http.ResponseWriter, req *http.Request, service string, err error) {

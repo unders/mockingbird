@@ -6,15 +6,14 @@ type HTMLAdapter interface {
 	// Business  Logic
 	//
 	Dashboard() (code int, body []byte, err error)
-	RunTest(environment string) (id int, err error)
-	ShowTestResult(environment string, id int) (code int, body []byte, err error)
-	ListTestResults(environment string) (code int, body []byte, err error)
-	RunTestForService(environment, service string) (id int, err error)
+	RunTest() (id int, err error)
+	ShowTestResult(id int) (code int, body []byte, err error)
+	ListTestResults() (code int, body []byte, err error)
+	RunTestForService(service string) (id int, err error)
 
 	//
 	// Validation
 	//
-	HasEnvError(environment string) error
 	HasServiceError(service string) error
 
 	//

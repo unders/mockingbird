@@ -29,20 +29,20 @@ func (a HTMLAdapter) Dashboard() (code int, body []byte, err error) {
 }
 
 // Dashboard starts a test suite
-func (a HTMLAdapter) RunTest(environment string) (id int, err error) {
+func (a HTMLAdapter) RunTest() (id int, err error) {
 
 	return a.Code, err
 }
 
 // ShowTestResult returns the ShowTestResult page
-func (a HTMLAdapter) ShowTestResult(environment string, id int) (code int, body []byte, err error) {
+func (a HTMLAdapter) ShowTestResult(id int) (code int, body []byte, err error) {
 	return a.Code, a.Body, a.Err
 }
 
 // ListTestResults returns the ListTestResults page
-func (a HTMLAdapter) ListTestResults(env string) (code int, body []byte, err error) {
+func (a HTMLAdapter) ListTestResults() (code int, body []byte, err error) {
 	// FIXME: This should be removed, just testing the concept.
-	result, err := sh.Output("mage", "-v", "test:all")
+	result, err := sh.Output("mage", "test:all")
 
 	status := sh.ExitStatus(err)
 
@@ -51,17 +51,13 @@ func (a HTMLAdapter) ListTestResults(env string) (code int, body []byte, err err
 }
 
 // RunTestForService starts a test suite for a service
-func (a HTMLAdapter) RunTestForService(env, service string) (id int, err error) {
+func (a HTMLAdapter) RunTestForService(service string) (id int, err error) {
 	return a.Code, a.Err
 }
 
 //
 // Validations
 //
-func (a HTMLAdapter) HasEnvError(env string) error {
-	return a.EnvErr
-}
-
 func (a HTMLAdapter) HasServiceError(env string) error {
 	return a.ServiceErr
 }

@@ -12,8 +12,8 @@ import (
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/b3"
 
-	"github.com/unders/mockingbird/server/cmd/mockingbird/mock"
-	"github.com/unders/mockingbird/server/domain/mockinbird"
+	"github.com/unders/mockingbird/server/domain/mockingbird"
+	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
 	"github.com/unders/mockingbird/server/pkg/signal"
 )
 
@@ -45,7 +45,7 @@ func options() Options {
 		ServerShutdownTimeout:   300 * time.Second, // 300s = 5*60s => 5 minutes
 
 		StartTime: time.Now().UTC(),
-		Log:       &mockinbird.Logger{Log: l},
+		Log:       &mockingbird.Logger{Log: l},
 		ErrorLog:  l,
 	}
 }

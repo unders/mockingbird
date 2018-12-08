@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/unders/mockingbird/server/domain/mockinbird"
+	"github.com/unders/mockingbird/server/domain/mockingbird"
 )
 
 // Options defined required fields for mockingbird
@@ -23,6 +23,6 @@ type Options struct {
 	ServerIdleTimeout       time.Duration
 	ServerShutdownTimeout   time.Duration
 
-	Log      mockinbird.Log
+	Log      mockingbird.Log
 	ErrorLog *log.Logger
 }

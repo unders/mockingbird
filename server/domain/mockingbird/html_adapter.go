@@ -1,4 +1,4 @@
-package mockinbird
+package mockingbird
 
 // HTMLAdapter interface for working with HTML pages
 type HTMLAdapter interface {

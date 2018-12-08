@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/magefile/mage/sh"
-	"github.com/unders/mockingbird/server/domain/mockinbird"
+	"github.com/unders/mockingbird/server/domain/mockingbird"
 )
 
 // HTMLAdapter is used for tests
@@ -17,7 +17,7 @@ type HTMLAdapter struct {
 }
 
 // Verifies that HTMLAdapter implements mockingbird.HTMLAdapter interface
-var _ mockinbird.HTMLAdapter = HTMLAdapter{}
+var _ mockingbird.HTMLAdapter = HTMLAdapter{}
 
 //
 // Business  Logic

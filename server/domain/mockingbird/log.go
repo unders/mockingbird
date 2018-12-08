@@ -1,4 +1,4 @@
-package mockinbird
+package mockingbird
 
 import "log"
 

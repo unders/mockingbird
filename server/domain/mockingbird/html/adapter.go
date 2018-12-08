@@ -1,6 +1,6 @@
 package html
 
-import "github.com/unders/mockingbird/server/domain/mockinbird"
+import "github.com/unders/mockingbird/server/domain/mockingbird"
 
 // Adapter implements the mockingbird.HTMLAdapter interface
 //
@@ -12,7 +12,7 @@ import "github.com/unders/mockingbird/server/domain/mockinbird"
 //
 //
 type Adapter struct {
-	container mockinbird.Container
+	container mockingbird.Container
 }
 
 // Verifies that *Adapter implements mockingbird.HTMLAdapter interface

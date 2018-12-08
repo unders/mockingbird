@@ -6,14 +6,15 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/unders/mockingbird/server/domain/mockingbird"
+
 	"github.com/pkg/errors"
-	"github.com/unders/mockingbird/server/domain/mockinbird"
 	"github.com/unders/mockingbird/server/pkg/rest"
 )
 
 type Handler struct {
-	HTML mockinbird.HTMLAdapter
-	Log  mockinbird.Log
+	HTML mockingbird.HTMLAdapter
+	Log  mockingbird.Log
 }
 
 // GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard

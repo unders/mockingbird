@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/magefile/mage/sh"
-	"github.com/unders/mockingbird/server/domain/mockingbird"
 )
 
 // HTMLAdapter is used for tests
@@ -16,16 +15,14 @@ type HTMLAdapter struct {
 	ServiceErr error
 }
 
-// Verifies that HTMLAdapter implements mockingbird.HTMLAdapter interface
-var _ mockingbird.HTMLAdapter = HTMLAdapter{}
-
 //
 // Business  Logic
 //
 
 // Dashboard returns the dashboard page
 func (a HTMLAdapter) Dashboard() (code int, body []byte, err error) {
-	return a.Code, a.Body, a.Err
+	b := append(a.Body, "dashboard page"...)
+	return a.Code, b, a.Err
 }
 
 // Dashboard starts a test suite

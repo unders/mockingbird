@@ -7,7 +7,7 @@ import "github.com/unders/mockingbird/server/domain/mockingbird"
 //
 // Note:
 //
-//         * It adapts between the http Handler and the mockingbird.Container
+//         * It adapts between the http handler and the mockingbird.Container
 //         * This adapter returns HTML pages.
 //
 //

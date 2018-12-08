@@ -12,21 +12,12 @@ import (
 	"github.com/unders/mockingbird/server/pkg/rest"
 )
 
-type Handler struct {
+type handler struct {
 	HTML mockingbird.HTMLAdapter
 	Log  mockingbird.Log
 }
 
-//GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
-//GET  http://localhost:8080/v1/dashboard
-//
-//POST http://localhost:8080/v1/tests/
-//GET  http://localhost:8080/v1/tests/{ID}
-//GET  http://localhost:8080/v1/tests/?service=<service>
-
-//POST http://localhost:8080/v1/tests/-/services/<service>
-
-func (h Handler) Make() http.Handler {
+func (h handler) make() http.Handler {
 	router := rest.Router{Namespaces: []string{"v1"}}
 
 	f := func(w http.ResponseWriter, req *http.Request) {
@@ -53,7 +44,7 @@ func (h Handler) Make() http.Handler {
 		case rest.Route{Method: http.MethodGet, Path: "/v1/tests/*"}:
 			h.showTestResult(w, req, path)
 		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
-			h.listTestResults(w, req, path)
+			h.listTestResults(w, req)
 		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/-/services/*"}:
 			h.runTestForService(w, req, path)
 		default:
@@ -67,12 +58,12 @@ func (h Handler) Make() http.Handler {
 //
 // HTML Handlers
 //
-func (h *Handler) showDashboard(w http.ResponseWriter, req *http.Request) {
+func (h *handler) showDashboard(w http.ResponseWriter, req *http.Request) {
 	code, b, err := h.HTML.Dashboard()
 	h.write(w, req, code, b, err)
 }
 
-func (h *Handler) runTest(w http.ResponseWriter, req *http.Request) {
+func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
 	id, err := h.HTML.RunTest()
 	if err != nil {
 		h.internalError(w, req, err)
@@ -82,7 +73,7 @@ func (h *Handler) runTest(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%d", id), http.StatusSeeOther)
 }
 
-func (h *Handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
+func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	id, err := path.Int(2)
 	if err != nil {
 		h.invalidID(w, req, id, err)
@@ -93,12 +84,12 @@ func (h *Handler) showTestResult(w http.ResponseWriter, req *http.Request, path 
 	h.write(w, req, code, b, err)
 }
 
-func (h *Handler) listTestResults(w http.ResponseWriter, req *http.Request, path rest.Path) {
+func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
 	code, b, err := h.HTML.ListTestResults()
 	h.write(w, req, code, b, err)
 }
 
-func (h *Handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
+func (h *handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	service := path.String(4, "")
 	if err := h.HTML.HasServiceError(service); err != nil {
 		h.invalidService(w, req, service, err)
@@ -117,12 +108,12 @@ func (h *Handler) runTestForService(w http.ResponseWriter, req *http.Request, pa
 // HTML Errors
 //
 
-func (h *Handler) internalError(w http.ResponseWriter, req *http.Request, err error) {
+func (h *handler) internalError(w http.ResponseWriter, req *http.Request, err error) {
 	code, b := h.HTML.ErrorServer()
 	h.write(w, req, code, b, err)
 }
 
-func (h *Handler) invalidID(w http.ResponseWriter, req *http.Request, id int, err error) {
+func (h *handler) invalidID(w http.ResponseWriter, req *http.Request, id int, err error) {
 	_, b := h.HTML.ErrorClient(
 		"Not a Number",
 		fmt.Sprintf("ID %d is not a valid number", id),
@@ -131,7 +122,7 @@ func (h *Handler) invalidID(w http.ResponseWriter, req *http.Request, id int, er
 	h.write(w, req, http.StatusBadRequest, b, err)
 }
 
-func (h *Handler) invalidService(w http.ResponseWriter, req *http.Request, service string, err error) {
+func (h *handler) invalidService(w http.ResponseWriter, req *http.Request, service string, err error) {
 	_, b := h.HTML.ErrorClient(
 		"Not Found",
 		fmt.Sprintf("The service %s does not exist.", service),
@@ -140,7 +131,7 @@ func (h *Handler) invalidService(w http.ResponseWriter, req *http.Request, servi
 	h.write(w, req, http.StatusNotFound, b, err)
 }
 
-func (h *Handler) invalidURLFormat(w http.ResponseWriter, req *http.Request, err error) {
+func (h *handler) invalidURLFormat(w http.ResponseWriter, req *http.Request, err error) {
 	_, b := h.HTML.ErrorClient(
 		"Invalid URL",
 		"The URL has invalid characters.",
@@ -149,7 +140,7 @@ func (h *Handler) invalidURLFormat(w http.ResponseWriter, req *http.Request, err
 	h.write(w, req, http.StatusBadRequest, b, err)
 }
 
-func (h *Handler) routeNotFound(w http.ResponseWriter, req *http.Request) {
+func (h *handler) routeNotFound(w http.ResponseWriter, req *http.Request) {
 	_, b := h.HTML.ErrorNotFound()
 	h.write(w, req, http.StatusBadRequest, b, errors.New("route not found"))
 }
@@ -158,7 +149,7 @@ func (h *Handler) routeNotFound(w http.ResponseWriter, req *http.Request) {
 // HTML Writer
 //
 
-func (h *Handler) write(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
+func (h *handler) write(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
 	body := bytes.NewReader(buf)
 
 	if err != nil {
@@ -180,12 +171,12 @@ func (h *Handler) write(w http.ResponseWriter, req *http.Request, code int, buf 
 // JSON
 //
 
-func (h *Handler) isJSON(req *http.Request) bool {
+func (h *handler) isJSON(req *http.Request) bool {
 	ct := req.Header.Get("Content-Type")
 	return ct == "application/json"
 }
 
-func (h *Handler) jsonNotImplemented(w http.ResponseWriter, req *http.Request) {
+func (h *handler) jsonNotImplemented(w http.ResponseWriter, req *http.Request) {
 	const code = http.StatusNotImplemented
 	var status = http.StatusText(code)
 	const msg = "JSON API not implemented by the server."
@@ -196,7 +187,7 @@ func (h *Handler) jsonNotImplemented(w http.ResponseWriter, req *http.Request) {
 	h.writeJSON(w, req, code, b, err)
 }
 
-func (h *Handler) writeJSON(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
+func (h *handler) writeJSON(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
 	body := bytes.NewReader(buf)
 
 	if err != nil {
@@ -217,13 +208,13 @@ func (h *Handler) writeJSON(w http.ResponseWriter, req *http.Request, code int, 
 //
 // General request logging
 //
-func (h *Handler) logResponseFailure(req *http.Request, code int, err error) {
+func (h *handler) logResponseFailure(req *http.Request, code int, err error) {
 	msg := http.StatusText(code)
 	const format = "%s %s    response error=%s    [%d %s]"
 	h.Log.Error(fmt.Sprintf(format, req.Method, req.URL.String(), err, code, msg))
 }
 
-func (h *Handler) logRequest(req *http.Request, code int, err error) {
+func (h *handler) logRequest(req *http.Request, code int, err error) {
 	msg := http.StatusText(code)
 	if err != nil {
 		const format = "%s %s    <-    %d %s    error=%s"

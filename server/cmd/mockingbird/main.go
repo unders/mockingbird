@@ -13,7 +13,6 @@ import (
 	"go.opencensus.io/plugin/ochttp/propagation/b3"
 
 	"github.com/unders/mockingbird/server/domain/mockingbird"
-	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
 	"github.com/unders/mockingbird/server/pkg/signal"
 )
 
@@ -64,17 +63,16 @@ func run(o Options) error {
 	format = "Options%+v"
 	l.Info(fmt.Sprintf(format, o))
 
-	handler := &ochttp.Handler{
-		Handler: Handler{
-			HTML: mock.HTMLAdapter{Code: 200, Body: []byte("Hello World")},
+	h := &ochttp.Handler{
+		Handler: handler{
+			HTML: mockingbird.NewHTMLAdapterMock(200, "Hello World!"),
 			Log:  o.Log,
-		}.Make(),
+		}.make(),
 
 		Propagation: &b3.HTTPFormat{},
 	}
-
 	srv := &http.Server{
-		Handler:           handler,
+		Handler:           h,
 		Addr:              o.ServerAddr,
 		ReadHeaderTimeout: o.ServerReadHeaderTimeout,
 		ReadTimeout:       o.ServerReadTimeout,

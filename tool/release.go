@@ -4,8 +4,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/unders/mockingbird/tool/pkg/retool"
-
 	"github.com/magefile/mage/sh"
 )
 
@@ -27,5 +25,5 @@ func Release() (err error) {
 		}
 	}()
 
-	return retool.ShellRun("goreleaser")
+	return sh.RunV("goreleaser")
 }

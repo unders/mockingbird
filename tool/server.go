@@ -39,10 +39,7 @@ func (Server) Race() error {
 // Build builds the mockingbird server here $GOPATH/bin/mockingbird
 func (Server) Build() error {
 	mg.SerialDeps(
-		Go.Version,
-		Server.download,
-		Server.Test,
-		Server.Race,
+		Server.All,
 		Server.build,
 	)
 

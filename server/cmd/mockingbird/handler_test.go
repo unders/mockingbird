@@ -15,20 +15,11 @@ import (
 	"github.com/unders/mockingbird/server/domain/mockingbird"
 )
 
-// ******* GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
-// ******* GET  http://localhost:8080/v1/dashboard
-//
-// POST http://localhost:8080/v1/tests/
-// GET  http://localhost:8080/v1/tests/{ID}
-// GET  http://localhost:8080/v1/tests/?service=<service>
-
-// POST http://localhost:8080/v1/tests/-/services/<service>
-
 func TestAPI(t *testing.T) {
 	t.Run("GET  /  RedirectsTo  /v1/dashboard", rootPathRedirectsToDashboard)
 	t.Run("GET  /v1/dashboard  Returns Dashboard Page", getDashboard)
 	t.Run("POST  /v1/dashboard  Returns Route Not Found  Error Page", postDashboard)
-	t.Run("POST  /v1/tests  Creates a Test Run Suite  Returns Status Created", postTests)
+	t.Run("POST  /v1/tests  Creates a Test Run Suite  Returns http.StatusCreated", postTests)
 }
 
 func testServer(t *testing.T, html mockingbird.HTMLAdapter) *httptest.Server {

@@ -25,7 +25,9 @@ func (h handler) make() http.Handler {
 			h.jsonNotImplemented(w, req)
 			return
 		}
+		//
 		// All other Content-Type's are treated as HTML.
+		//
 
 		path, route, err := router.New(req)
 		if err != nil {

@@ -12,7 +12,7 @@ import "github.com/unders/mockingbird/server/domain/mockingbird"
 //
 //
 type Adapter struct {
-	container mockingbird.App
+	app mockingbird.App
 }
 
 // Verifies that *Adapter implements mockingbird.HTMLAdapter interface

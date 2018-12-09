@@ -1,5 +1,5 @@
 package mockingbird
 
-// App implements the business logic for the mockingbird application.
-type App struct {
+// App defines the interface for the mockingbird application
+type App interface {
 }

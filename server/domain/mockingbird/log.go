@@ -2,8 +2,6 @@ package mockingbird
 
 import (
 	"log"
-
-	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
 )
 
 // Log interface
@@ -34,15 +32,4 @@ func (l *Logger) Error(msg string) {
 func (l *Logger) Info(msg string) {
 	const format = "INFO: %s\n"
 	l.Log.Printf(format, msg)
-}
-
-//
-// mock.Log
-//
-
-// Verifies that mock.Log implements mockingbird.Log interface
-var _ Log = &mock.Log{}
-
-func NewLoggerMock() Log {
-	return &mock.Log{}
 }

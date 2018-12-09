@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
+
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/b3"
 
@@ -65,7 +67,7 @@ func run(o Options) error {
 
 	h := &ochttp.Handler{
 		Handler: handler{
-			HTML: mockingbird.NewHTMLAdapterMock(200, "Hello World!", nil, nil, nil),
+			HTML: mock.HTMLAdapter{Code: 200, Body: []byte("Hello World!")},
 			Log:  o.Log,
 		}.make(),
 

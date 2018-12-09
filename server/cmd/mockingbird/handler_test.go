@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
+
 	"github.com/unders/mockingbird/server/pkg/testdata"
 
 	"github.com/unders/mockingbird/server/domain/mockingbird"
@@ -29,10 +31,10 @@ func TestAPI(t *testing.T) {
 	t.Run("POST  /v1/tests  Creates a Test Run Suite  Returns Status Created", postTests)
 }
 
-func testServer(t *testing.T, code int, body string, err, idErr, serviceErr error) *httptest.Server {
+func testServer(t *testing.T, html mockingbird.HTMLAdapter) *httptest.Server {
 	h := handler{
-		HTML: mockingbird.NewHTMLAdapterMock(code, body, err, idErr, serviceErr),
-		Log:  mockingbird.NewLoggerMock(),
+		HTML: html,
+		Log:  &mock.Log{},
 	}.make()
 
 	ts := httptest.NewServer(h)
@@ -40,7 +42,7 @@ func testServer(t *testing.T, code int, body string, err, idErr, serviceErr erro
 }
 
 func rootPathRedirectsToDashboard(t *testing.T) {
-	ts := testServer(t, 200, "redirects to ", nil, nil, nil)
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("redirects to ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -88,7 +90,7 @@ func rootPathRedirectsToDashboard(t *testing.T) {
 }
 
 func getDashboard(t *testing.T) {
-	ts := testServer(t, 200, "", nil, nil, nil)
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -130,7 +132,7 @@ func getDashboard(t *testing.T) {
 }
 
 func postDashboard(t *testing.T) {
-	ts := testServer(t, 200, "Error: ", nil, nil, nil)
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Error: ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -174,7 +176,7 @@ func postDashboard(t *testing.T) {
 // POST http://localhost:8080/v1/tests/
 
 func postTests(t *testing.T) {
-	ts := testServer(t, http.StatusCreated, "Redirects to ", nil, nil, nil)
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusCreated, Body: []byte("Redirects to ")})
 	defer ts.Close()
 
 	testCases := []struct {

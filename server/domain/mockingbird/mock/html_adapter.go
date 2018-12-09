@@ -1,5 +1,7 @@
 package mock
 
+import "github.com/unders/mockingbird/server/domain/mockingbird"
+
 // HTMLAdapter is used for tests
 type HTMLAdapter struct {
 	Code       int
@@ -8,6 +10,9 @@ type HTMLAdapter struct {
 	IDErr      error
 	ServiceErr error
 }
+
+// Verifies that HTMLAdapter implements mockingbird.HTMLAdapter interface
+var _ mockingbird.HTMLAdapter = HTMLAdapter{}
 
 //
 // Business  Logic
@@ -33,6 +38,12 @@ func (a HTMLAdapter) RunTest() (id string, code int, cody []byte, err error) {
 
 // ShowTestResult returns the ShowTestResult page
 func (a HTMLAdapter) ShowTestResult(id string) (code int, body []byte, err error) {
+	if a.IDErr != nil {
+		b := append(a.Body, "HasIdError for "...)
+		b = append(b, id...)
+		return a.Code, b, a.IDErr
+	}
+
 	b := append(a.Body, "test result page for id="...)
 	b = append(b, id...)
 	if a.Err != nil {
@@ -52,35 +63,18 @@ func (a HTMLAdapter) ListTestResults() (code int, body []byte, err error) {
 
 // RunTestForService starts a test suite for a service
 func (a HTMLAdapter) RunTestForService(service string) (id string, code int, body []byte, err error) {
+	if a.ServiceErr != nil {
+		b := append(a.Body, "HasServiceError for "...)
+		b = append(b, service...)
+
+		return "", a.Code, b, a.ServiceErr
+	}
 	b := a.Body
 	if a.Err != nil {
 		b = append(b, " with runTestForService error"...)
 		b = append(b, service...)
 	}
 	return "test-suite-for-service-id", a.Code, b, a.Err
-}
-
-//
-// Validations
-//
-func (a HTMLAdapter) HasIdError(id string) (code int, body []byte, err error) {
-	if a.IDErr != nil {
-		b := append(a.Body, "HasIdError for "...)
-		b = append(b, id...)
-
-		return a.Code, b, a.IDErr
-	}
-	return a.Code, a.Body, nil
-}
-
-func (a HTMLAdapter) HasServiceError(service string) (code int, body []byte, err error) {
-	if a.ServiceErr != nil {
-		b := append(a.Body, "HasServiceError for "...)
-		b = append(b, service...)
-
-		return a.Code, b, a.ServiceErr
-	}
-	return a.Code, a.Body, nil
 }
 
 //

@@ -75,13 +75,7 @@ func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	id := path.String(2, "")
-	if code, body, err := h.HTML.HasIdError(id); err != nil {
-		h.write(w, req, code, body, err)
-		return
-	}
-
-	code, b, err := h.HTML.ShowTestResult(id)
+	code, b, err := h.HTML.ShowTestResult(path.String(2, ""))
 	h.write(w, req, code, b, err)
 }
 
@@ -91,12 +85,7 @@ func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	service := path.String(4, "")
-	if code, body, err := h.HTML.HasServiceError(service); err != nil {
-		h.write(w, req, code, body, err)
-		return
-	}
-	id, code, body, err := h.HTML.RunTestForService(service)
+	id, code, body, err := h.HTML.RunTestForService(path.String(4, ""))
 	if err != nil {
 		h.write(w, req, code, body, err)
 		return

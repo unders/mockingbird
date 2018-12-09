@@ -7,12 +7,12 @@ import "github.com/unders/mockingbird/server/domain/mockingbird"
 //
 // Note:
 //
-//         * It adapts between the http handler and the mockingbird.Container
+//         * It adapts between the http.Handler and the mockingbird.App
 //         * This adapter returns HTML pages.
 //
 //
 type Adapter struct {
-	container mockingbird.Container
+	container mockingbird.App
 }
 
 // Verifies that *Adapter implements mockingbird.HTMLAdapter interface

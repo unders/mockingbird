@@ -53,8 +53,14 @@ func (a HTMLAdapter) ShowTestResult(id string) (code int, body []byte, err error
 }
 
 // ListTestResults returns the ListTestResults page
-func (a HTMLAdapter) ListTestResults() (code int, body []byte, err error) {
+func (a HTMLAdapter) ListTestResults(service string) (code int, body []byte, err error) {
 	b := append(a.Body, "list test result page"...)
+
+	if service != "" {
+		b = append(b, " for service="...)
+		b = append(b, service...)
+	}
+
 	if a.Err != nil {
 		b = append(b, " with error"...)
 	}
@@ -71,10 +77,10 @@ func (a HTMLAdapter) RunTestForService(service string) (id string, code int, bod
 	}
 	b := a.Body
 	if a.Err != nil {
-		b = append(b, " with runTestForService error"...)
+		b = append(b, "with runTestForService error service="...)
 		b = append(b, service...)
 	}
-	return "test-suite-for-service-id", a.Code, b, a.Err
+	return "test-suite-x", a.Code, b, a.Err
 }
 
 //

@@ -47,7 +47,7 @@ func (h handler) make() http.Handler {
 			h.showTestResult(w, req, path)
 		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
 			h.listTestResults(w, req)
-		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/-/services/*"}:
+		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/*/services/*"}:
 			h.runTestForService(w, req, path)
 		default:
 			err := errors.New("route not found")
@@ -82,7 +82,7 @@ func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path 
 }
 
 func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
-	code, b, err := h.HTML.ListTestResults()
+	code, b, err := h.HTML.ListTestResults(req.URL.Query().Get("service"))
 	h.write(w, req, code, b, err)
 }
 

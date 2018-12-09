@@ -25,11 +25,11 @@ func (h handler) make() http.Handler {
 			h.jsonNotImplemented(w, req)
 			return
 		}
-		// All other Content Types are treated as HTML.
+		// All other Content-Type's are treated as HTML.
 
 		path, route, err := router.New(req)
 		if err != nil {
-			h.invalidURLFormat(w, req, err)
+			h.write(w, req, http.StatusBadRequest, h.HTML.InvalidURL(), err)
 			return
 		}
 
@@ -48,7 +48,8 @@ func (h handler) make() http.Handler {
 		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/-/services/*"}:
 			h.runTestForService(w, req, path)
 		default:
-			h.routeNotFound(w, req)
+			err := errors.New("route not found")
+			h.write(w, req, http.StatusBadRequest, h.HTML.ErrorNotFound(), err)
 		}
 	}
 
@@ -64,19 +65,19 @@ func (h *handler) showDashboard(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
-	id, err := h.HTML.RunTest()
+	id, code, body, err := h.HTML.RunTest()
 	if err != nil {
-		h.internalError(w, req, err)
+		h.write(w, req, code, body, err)
 		return
 	}
 
-	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%d", id), http.StatusSeeOther)
+	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%s", id), http.StatusSeeOther)
 }
 
 func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	id, err := path.Int(2)
-	if err != nil {
-		h.invalidID(w, req, id, err)
+	id := path.String(2, "")
+	if code, body, err := h.HTML.HasIdError(id); err != nil {
+		h.write(w, req, code, body, err)
 		return
 	}
 
@@ -91,58 +92,17 @@ func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
 
 func (h *handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	service := path.String(4, "")
-	if err := h.HTML.HasServiceError(service); err != nil {
-		h.invalidService(w, req, service, err)
+	if code, body, err := h.HTML.HasServiceError(service); err != nil {
+		h.write(w, req, code, body, err)
 		return
 	}
-	id, err := h.HTML.RunTestForService(service)
+	id, code, body, err := h.HTML.RunTestForService(service)
 	if err != nil {
-		h.internalError(w, req, err)
+		h.write(w, req, code, body, err)
 		return
 	}
 
-	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%d", id), http.StatusSeeOther)
-}
-
-//
-// HTML Errors
-//
-
-func (h *handler) internalError(w http.ResponseWriter, req *http.Request, err error) {
-	code, b := h.HTML.ErrorServer()
-	h.write(w, req, code, b, err)
-}
-
-func (h *handler) invalidID(w http.ResponseWriter, req *http.Request, id int, err error) {
-	_, b := h.HTML.ErrorClient(
-		"Not a Number",
-		fmt.Sprintf("ID %d is not a valid number", id),
-	)
-
-	h.write(w, req, http.StatusBadRequest, b, err)
-}
-
-func (h *handler) invalidService(w http.ResponseWriter, req *http.Request, service string, err error) {
-	_, b := h.HTML.ErrorClient(
-		"Not Found",
-		fmt.Sprintf("The service %s does not exist.", service),
-	)
-
-	h.write(w, req, http.StatusNotFound, b, err)
-}
-
-func (h *handler) invalidURLFormat(w http.ResponseWriter, req *http.Request, err error) {
-	_, b := h.HTML.ErrorClient(
-		"Invalid URL",
-		"The URL has invalid characters.",
-	)
-
-	h.write(w, req, http.StatusBadRequest, b, err)
-}
-
-func (h *handler) routeNotFound(w http.ResponseWriter, req *http.Request) {
-	_, b := h.HTML.ErrorNotFound()
-	h.write(w, req, http.StatusBadRequest, b, errors.New("route not found"))
+	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%s", id), http.StatusSeeOther)
 }
 
 //

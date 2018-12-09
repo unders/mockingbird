@@ -65,7 +65,7 @@ func run(o Options) error {
 
 	h := &ochttp.Handler{
 		Handler: handler{
-			HTML: mockingbird.NewHTMLAdapterMock(200, "Hello World!"),
+			HTML: mockingbird.NewHTMLAdapterMock(200, "Hello World!", nil, nil, nil),
 			Log:  o.Log,
 		}.make(),
 

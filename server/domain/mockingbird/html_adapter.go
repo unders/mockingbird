@@ -8,22 +8,22 @@ type HTMLAdapter interface {
 	// Business  Logic
 	//
 	Dashboard() (code int, body []byte, err error)
-	RunTest() (id int, err error)
-	ShowTestResult(id int) (code int, body []byte, err error)
+	RunTest() (id string, code int, body []byte, err error)
+	ShowTestResult(id string) (code int, body []byte, err error)
 	ListTestResults() (code int, body []byte, err error)
-	RunTestForService(service string) (id int, err error)
+	RunTestForService(service string) (id string, code int, body []byte, err error)
 
 	//
 	// Validation
 	//
-	HasServiceError(service string) error
+	HasIdError(id string) (code int, body []byte, err error)
+	HasServiceError(service string) (code int, body []byte, err error)
 
 	//
 	// Error pages
 	//
-	ErrorNotFound() (code int, body []byte)
-	ErrorClient(title, description string) (code int, body []byte)
-	ErrorServer() (code int, body []byte)
+	ErrorNotFound() (body []byte)
+	InvalidURL() (body []byte)
 }
 
 // NewHTMLAdapter returns an HTMLAdapter
@@ -35,10 +35,16 @@ func NewHTMLAdapter() HTMLAdapter {
 // mock.HTMLAdapter
 //
 
-// Verifies that HTMLAdapter implements mockingbird.HTMLAdapter interface
+// Verifies that mock.HTMLAdapter implements mockingbird.HTMLAdapter interface
 var _ HTMLAdapter = mock.HTMLAdapter{}
 
 // NewHTMLAdapterMock returns an HTMLAdapterMock
-func NewHTMLAdapterMock(code int, body string) HTMLAdapter {
-	return mock.HTMLAdapter{Code: code, Body: []byte(body)}
+func NewHTMLAdapterMock(code int, body string, err, idErr, serviceErr error) HTMLAdapter {
+	return mock.HTMLAdapter{
+		Code:       code,
+		Body:       []byte(body),
+		Err:        err,
+		IDErr:      idErr,
+		ServiceErr: serviceErr,
+	}
 }

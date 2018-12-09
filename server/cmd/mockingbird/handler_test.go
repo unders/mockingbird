@@ -18,10 +18,14 @@ import (
 )
 
 func TestAPI(t *testing.T) {
+	t.Run("GET  /  When Content-Type=application/json ReturnsError", getRootAsJSON)
 	t.Run("GET  /  RedirectsTo  /v1/dashboard", rootPathRedirectsToDashboard)
 	t.Run("GET  /v1/dashboard  ReturnsDashboardPage", getDashboard)
 	t.Run("POST  /v1/dashboard  ReturnsErrorRouteNotFound", postDashboard)
+
 	t.Run("POST  /v1/tests  StartsATestSuite  Redirects", postTests)
+	t.Run("POST  /v1/tests  WhenServerError  ReturnsError", postTestsWhenServerError)
+
 	t.Run("GET  /v1/tests/{id} ReturnsTestResultPage", getTest)
 	t.Run("GET  /v1/tests/ ReturnsTestResultListPage", getTestResults)
 
@@ -38,6 +42,52 @@ func testServer(t *testing.T, html mockingbird.HTMLAdapter) *httptest.Server {
 
 	ts := httptest.NewServer(h)
 	return ts
+}
+
+func getRootAsJSON(t *testing.T) {
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
+	defer ts.Close()
+
+	testCases := []struct {
+		URL            string
+		wantCode       int
+		wantBody       []byte
+		wantRequestURL string
+	}{
+		{
+			URL:            ts.URL + "/",
+			wantCode:       http.StatusNotImplemented,
+			wantBody:       []byte(`{"error": { "code": 501, "status": "Not Implemented", "message": "JSON API not implemented by the server." } }`),
+			wantRequestURL: "/",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodGet, tc.URL, nil)
+			testdata.AssertNil(t, err)
+
+			req.Header.Set("Accept", "application/json")
+			resp, err := http.DefaultClient.Do(req)
+			testdata.AssertNil(t, err)
+			defer resp.Body.Close()
+
+			if tc.wantCode != resp.StatusCode {
+				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
+			}
+
+			b, err := ioutil.ReadAll(resp.Body)
+			testdata.AssertNil(t, err)
+			if !reflect.DeepEqual(tc.wantBody, b) {
+				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
+			}
+
+			got := resp.Request.URL.RequestURI()
+			if tc.wantRequestURL != got {
+				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
+			}
+		})
+	}
 }
 
 func rootPathRedirectsToDashboard(t *testing.T) {
@@ -187,6 +237,49 @@ func postTests(t *testing.T) {
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("Redirects to test result page for id=test-suite-id"),
 			wantRequestURL: "/v1/tests/test-suite-id",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
+			testdata.AssertNil(t, err)
+			defer resp.Body.Close()
+
+			if tc.wantCode != resp.StatusCode {
+				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
+			}
+
+			b, err := ioutil.ReadAll(resp.Body)
+			testdata.AssertNil(t, err)
+			if !reflect.DeepEqual(tc.wantBody, b) {
+				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
+			}
+
+			got := resp.Request.URL.RequestURI()
+			if tc.wantRequestURL != got {
+				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
+			}
+		})
+	}
+}
+
+func postTestsWhenServerError(t *testing.T) {
+	serr := errors.New("")
+	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
+	defer ts.Close()
+
+	testCases := []struct {
+		URL            string
+		wantCode       int
+		wantBody       []byte
+		wantRequestURL string
+	}{
+		{
+			URL:            ts.URL + "/v1/tests/",
+			wantCode:       http.StatusInternalServerError,
+			wantBody:       []byte("Body: with runTest error"),
+			wantRequestURL: "/v1/tests/",
 		},
 	}
 

@@ -31,7 +31,7 @@ func (a HTMLAdapter) Dashboard() (code int, body []byte, err error) {
 func (a HTMLAdapter) RunTest() (id string, code int, cody []byte, err error) {
 	b := a.Body
 	if a.Err != nil {
-		b = append(b, " with runTest error"...)
+		b = append(b, "with runTest error"...)
 	}
 	return "test-suite-id", a.Code, b, a.Err
 }

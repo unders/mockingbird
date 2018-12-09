@@ -77,7 +77,8 @@ func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	code, b, err := h.HTML.ShowTestResult(path.String(2, ""))
+	id := path.String(2, "")
+	code, b, err := h.HTML.ShowTestResult(id)
 	h.write(w, req, code, b, err)
 }
 
@@ -87,7 +88,8 @@ func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	id, code, body, err := h.HTML.RunTestForService(path.String(4, ""))
+	service := path.String(4, "")
+	id, code, body, err := h.HTML.RunTestForService(service)
 	if err != nil {
 		h.write(w, req, code, body, err)
 		return
@@ -123,8 +125,11 @@ func (h *handler) write(w http.ResponseWriter, req *http.Request, code int, buf 
 //
 
 func (h *handler) isJSON(req *http.Request) bool {
+	const jsonFormat = "application/json"
+	accept := req.Header.Get("Accept")
 	ct := req.Header.Get("Content-Type")
-	return ct == "application/json"
+
+	return ct == jsonFormat || accept == jsonFormat
 }
 
 func (h *handler) jsonNotImplemented(w http.ResponseWriter, req *http.Request) {

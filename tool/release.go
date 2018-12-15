@@ -20,8 +20,8 @@ func Release() (err error) {
 	}
 	defer func() {
 		if err != nil {
-			sh.RunV("git", "tag", "--delete", "$TAG")
-			sh.RunV("git", "push", "--delete", "origin", "$TAG")
+			_ = sh.RunV("git", "tag", "--delete", "$TAG")
+			_ = sh.RunV("git", "push", "--delete", "origin", "$TAG")
 		}
 	}()
 

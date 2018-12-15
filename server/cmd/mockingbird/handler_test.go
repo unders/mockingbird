@@ -34,7 +34,7 @@ func TestAPI(t *testing.T) {
 	t.Run("POST  /v1/tests/-/services/{service-name} WhenServerError  ReturnsError", postServiceTestsWhenServerError)
 }
 
-func testServer(t *testing.T, html mockingbird.HTMLAdapter) *httptest.Server {
+func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
 	h := handler{
 		HTML: html,
 		Log:  &mock.Log{},
@@ -45,7 +45,7 @@ func testServer(t *testing.T, html mockingbird.HTMLAdapter) *httptest.Server {
 }
 
 func getRootAsJSON(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -70,7 +70,7 @@ func getRootAsJSON(t *testing.T) {
 			req.Header.Set("Accept", "application/json")
 			resp, err := http.DefaultClient.Do(req)
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -91,7 +91,7 @@ func getRootAsJSON(t *testing.T) {
 }
 
 func rootPathRedirectsToDashboard(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("redirects to ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("redirects to ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -118,7 +118,7 @@ func rootPathRedirectsToDashboard(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Get(tc.URL)
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -139,7 +139,7 @@ func rootPathRedirectsToDashboard(t *testing.T) {
 }
 
 func getDashboard(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -160,7 +160,7 @@ func getDashboard(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Get(tc.URL)
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -181,7 +181,7 @@ func getDashboard(t *testing.T) {
 }
 
 func postDashboard(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Error: ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Error: ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -202,7 +202,7 @@ func postDashboard(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -223,7 +223,7 @@ func postDashboard(t *testing.T) {
 }
 
 func postTests(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -244,7 +244,7 @@ func postTests(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -266,7 +266,7 @@ func postTests(t *testing.T) {
 
 func postTestsWhenServerError(t *testing.T) {
 	serr := errors.New("")
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -287,7 +287,7 @@ func postTestsWhenServerError(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -308,7 +308,7 @@ func postTestsWhenServerError(t *testing.T) {
 }
 
 func getTest(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("body: ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("body: ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -329,7 +329,7 @@ func getTest(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Get(tc.URL)
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -350,7 +350,7 @@ func getTest(t *testing.T) {
 }
 
 func getTestResults(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("body: ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("body: ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -389,7 +389,7 @@ func getTestResults(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Get(tc.URL)
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -410,7 +410,7 @@ func getTestResults(t *testing.T) {
 }
 
 func postServiceTests(t *testing.T) {
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -431,7 +431,7 @@ func postServiceTests(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -453,7 +453,7 @@ func postServiceTests(t *testing.T) {
 
 func postServiceTestsWhenInvalidService(t *testing.T) {
 	serr := errors.New("service name is invalid")
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusBadRequest, Body: []byte("Body: "), ServiceErr: serr})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusBadRequest, Body: []byte("Body: "), ServiceErr: serr})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -474,7 +474,7 @@ func postServiceTestsWhenInvalidService(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
@@ -496,7 +496,7 @@ func postServiceTestsWhenInvalidService(t *testing.T) {
 
 func postServiceTestsWhenServerError(t *testing.T) {
 	serr := errors.New("server error")
-	ts := testServer(t, mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
 	defer ts.Close()
 
 	testCases := []struct {
@@ -517,7 +517,7 @@ func postServiceTestsWhenServerError(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
-			defer resp.Body.Close()
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
 			if tc.wantCode != resp.StatusCode {
 				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)

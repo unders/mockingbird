@@ -11,7 +11,7 @@ import (
 
 type Tool mg.Namespace
 
-// Download download toll required by this project
+// Download download tool required by this project
 func (Tool) Download() error {
 	mg.Deps(
 	// install dependencies in parallel

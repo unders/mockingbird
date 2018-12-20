@@ -35,10 +35,10 @@ func TestAPI(t *testing.T) {
 }
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
-	h := handler{
+	h := createHandler(handler{
 		HTML: html,
 		Log:  &mock.Log{},
-	}.make()
+	})
 
 	ts := httptest.NewServer(h)
 	return ts

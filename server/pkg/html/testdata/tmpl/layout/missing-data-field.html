@@ -1,0 +1,21 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{block "title" .}} {{.Title}} {{end}}</title>
+  </head>
+  <body>
+	{{- block "sidebar" .Missing }}
+	    {{- template "partial/sidebar" }}
+	{{- end}}
+	{{- block "header" . }}
+	    {{- template "partial/header" }}
+	{{- end}}
+	{{- block "content" . }}
+	    {{- template "partial/content" }}
+	{{- end}}
+	{{- block "footer" . }}
+	    {{- template "partial/footer" }}
+	{{- end}}
+  </body>
+</html>

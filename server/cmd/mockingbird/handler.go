@@ -17,7 +17,7 @@ type handler struct {
 	Log  mockingbird.Log
 }
 
-func (h handler) make() http.Handler {
+func createHandler(h handler) http.Handler {
 	router := rest.Router{Namespaces: []string{"v1"}}
 
 	f := func(w http.ResponseWriter, req *http.Request) {
@@ -112,7 +112,7 @@ func (h *handler) write(w http.ResponseWriter, req *http.Request, code int, buf 
 
 	w.WriteHeader(code)
 	if _, err := io.Copy(w, body); err != nil {
-		errors.Wrapf(err, "io.Copy(w, body) failed")
+		err = errors.Wrapf(err, "io.Copy(w, body) failed")
 		h.logResponseFailure(req, code, err)
 		return
 	}
@@ -153,7 +153,7 @@ func (h *handler) writeJSON(w http.ResponseWriter, req *http.Request, code int, 
 
 	w.WriteHeader(code)
 	if _, err := io.Copy(w, body); err != nil {
-		errors.Wrap(err, "io.Copy(w, body) failed")
+		err = errors.Wrap(err, "io.Copy(w, body) failed")
 		h.logResponseFailure(req, code, err)
 		return
 	}

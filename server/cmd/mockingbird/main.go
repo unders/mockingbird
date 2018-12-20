@@ -9,7 +9,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
+	"github.com/pkg/errors"
+
+	"github.com/unders/mockingbird/server/domain/mockingbird/app"
 
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ochttp/propagation/b3"
@@ -65,14 +67,20 @@ func run(o Options) error {
 	format = "Options%+v"
 	l.Info(fmt.Sprintf(format, o))
 
+	builder, err := app.Create(app.Builder{Logger: o.ErrorLog})
+	if err != nil {
+		return errors.Wrap(err, "app.Create() failed")
+	}
+
 	h := &ochttp.Handler{
-		Handler: handler{
-			HTML: mock.HTMLAdapter{Code: 200, Body: []byte("Hello World!")},
-			Log:  o.Log,
-		}.make(),
+		Handler: createHandler(handler{
+			HTML: builder.HTMLAdapter(),
+			Log:  builder.Log(),
+		}),
 
 		Propagation: &b3.HTTPFormat{},
 	}
+
 	srv := &http.Server{
 		Handler:           h,
 		Addr:              o.ServerAddr,
@@ -89,7 +97,6 @@ func run(o Options) error {
 	errCh := make(chan error, 1)
 	go func() { errCh <- srv.ListenAndServe() }()
 
-	var err error
 	select {
 	case err = <-errCh:
 		const format = "server error=%s commit-hash=%s run-time=%s"

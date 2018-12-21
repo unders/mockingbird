@@ -47,6 +47,8 @@ func options() Options {
 		ServerIdleTimeout:       20 * time.Second,  // 20
 		ServerShutdownTimeout:   300 * time.Second, // 300s = 5*60s => 5 minutes
 
+		FaviconDir: "web/mockingbird/public/favicon",
+
 		StartTime: time.Now().UTC(),
 		Log:       &mockingbird.Logger{Log: l},
 		ErrorLog:  l,
@@ -67,15 +69,19 @@ func run(o Options) error {
 	format = "Options%+v"
 	l.Info(fmt.Sprintf(format, o))
 
-	builder, err := app.Create(app.Builder{Logger: o.ErrorLog})
+	builder, err := app.Create(app.Builder{
+		Logger:     o.ErrorLog,
+		FaviconDir: o.FaviconDir,
+	})
 	if err != nil {
 		return errors.Wrap(err, "app.Create() failed")
 	}
 
 	h := &ochttp.Handler{
 		Handler: createHandler(handler{
-			HTML: builder.HTMLAdapter(),
-			Log:  builder.Log(),
+			Favicon: builder.Favicon(),
+			HTML:    builder.HTMLAdapter(),
+			Log:     builder.Log(),
 		}),
 
 		Propagation: &b3.HTTPFormat{},

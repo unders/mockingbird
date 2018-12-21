@@ -24,6 +24,9 @@ type Options struct {
 	ServerIdleTimeout       time.Duration
 	ServerShutdownTimeout   time.Duration
 
+	// Web
+	FaviconDir string
+
 	Log      mockingbird.Log
 	ErrorLog *log.Logger
 }

@@ -13,8 +13,9 @@ import (
 )
 
 type handler struct {
-	HTML mockingbird.HTMLAdapter
-	Log  mockingbird.Log
+	Favicon func(r *http.Request) (http.Handler, bool)
+	HTML    mockingbird.HTMLAdapter
+	Log     mockingbird.Log
 }
 
 func createHandler(h handler) http.Handler {
@@ -50,6 +51,11 @@ func createHandler(h handler) http.Handler {
 		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/*/services/*"}:
 			h.runTestForService(w, req, path)
 		default:
+			if favicon, found := h.Favicon(req); found {
+				h.logRequest(req, http.StatusOK, nil)
+				favicon.ServeHTTP(w, req)
+				return
+			}
 			err := errors.New("route not found")
 			h.write(w, req, http.StatusBadRequest, h.HTML.ErrorNotFound(), err)
 		}

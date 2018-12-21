@@ -2,6 +2,9 @@ package app
 
 import (
 	"log"
+	"net/http"
+
+	"github.com/unders/mockingbird/server/pkg/handler"
 
 	"github.com/unders/mockingbird/server/domain/mockingbird"
 	"github.com/unders/mockingbird/server/domain/mockingbird/html"
@@ -12,13 +15,24 @@ import (
 func Create(b Builder) (*Builder, error) {
 	// do the setup here
 	b.app = &Mockingbird{}
+	b.favicon = handler.Favicons(b.FaviconDir)
 	return &b, nil
 }
 
 // Builder builds the application
 type Builder struct {
-	Logger *log.Logger
-	app    mockingbird.App
+	// Required input
+	Logger     *log.Logger
+	FaviconDir string
+
+	// constructed in create method
+	favicon func(*http.Request) (http.Handler, bool)
+	app     mockingbird.App
+}
+
+// Favicon returns a http.Handler for favicons
+func (b *Builder) Favicon() func(*http.Request) (http.Handler, bool) {
+	return b.favicon
 }
 
 // HTMLMockAdapter returns a mock.HTMLAdapter

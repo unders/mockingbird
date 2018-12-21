@@ -2,6 +2,9 @@
 
 Mockingbird is a system testing framework built for the serverless world.
 
+## TODO
+* Add test for favicons handler
+
 ## Setup
 
 ### Prerequisite

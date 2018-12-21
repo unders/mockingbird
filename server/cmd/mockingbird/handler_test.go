@@ -18,6 +18,7 @@ import (
 )
 
 func TestAPI(t *testing.T) {
+	// TODO: Add test for favicons
 	t.Run("GET  /  When Content-Type=application/json ReturnsError", getRootAsJSON)
 	t.Run("GET  /  RedirectsTo  /v1/dashboard", rootPathRedirectsToDashboard)
 	t.Run("GET  /v1/dashboard  ReturnsDashboardPage", getDashboard)
@@ -36,8 +37,9 @@ func TestAPI(t *testing.T) {
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
 	h := createHandler(handler{
-		HTML: html,
-		Log:  &mock.Log{},
+		Favicon: func(r *http.Request) (http.Handler, bool) { return nil, false },
+		HTML:    html,
+		Log:     &mock.Log{},
 	})
 
 	ts := httptest.NewServer(h)

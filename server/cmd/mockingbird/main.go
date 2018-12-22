@@ -47,7 +47,7 @@ func options() Options {
 		ServerIdleTimeout:       20 * time.Second,  // 20
 		ServerShutdownTimeout:   300 * time.Second, // 300s = 5*60s => 5 minutes
 
-		FaviconDir: "web/mockingbird/public/favicon",
+		FaviconDir: "./web/mockingbird/public/favicon",
 
 		StartTime: time.Now().UTC(),
 		Log:       &mockingbird.Logger{Log: l},

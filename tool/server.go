@@ -36,7 +36,7 @@ func (Server) Race() error {
 	return sh.RunV("go", "test", "-race", "./server/...")
 }
 
-// Build builds the mockingbird server here $GOPATH/bin/mockingbird
+// Build builds the mockingbird server into dir $GOPATH/bin/mockingbird
 func (Server) Build() error {
 	mg.SerialDeps(
 		Server.All,
@@ -44,6 +44,16 @@ func (Server) Build() error {
 	)
 
 	return nil
+}
+
+// Start starts $GOPATH/bin/mockingbird
+func (Server) Start() error {
+	mg.SerialDeps(
+		Server.All,
+		Server.build,
+	)
+
+	return sh.RunV("mockingbird")
 }
 
 func (Server) build() error {

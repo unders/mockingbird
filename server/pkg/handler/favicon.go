@@ -5,10 +5,13 @@ import (
 	"path/filepath"
 )
 
-// Favicons serves favicons from the specified directory
+// Favicons returns a function that serves favicons from the specified directory when called.
 //
 // Usage:
 //         f := handler.Favicons("web/mockingbird/public/favicon")
+//         if handler, found := f(req); found {
+//             handler.ServeHTTP(w, req)
+//         }
 //
 func Favicons(dir string) func(r *http.Request) (http.Handler, bool) {
 	serveFile := func(filename string) http.Handler {
@@ -22,7 +25,6 @@ func Favicons(dir string) func(r *http.Request) (http.Handler, bool) {
 		return http.HandlerFunc(h)
 	}
 
-	// apple-touch-icon-precomposed.png is missing
 	h := map[string]http.Handler{
 		"/android-chrome-192x192.png":       serveFile("android-chrome-192x192.png"),
 		"/android-chrome-512x512.png":       serveFile("android-chrome-512x512.png"),
@@ -43,9 +45,7 @@ func Favicons(dir string) func(r *http.Request) (http.Handler, bool) {
 	}
 
 	return func(req *http.Request) (http.Handler, bool) {
-		if handler, found := h[req.URL.EscapedPath()]; found {
-			return handler, true
-		}
-		return nil, false
+		handler, found := h[req.URL.EscapedPath()]
+		return handler, found
 	}
 }

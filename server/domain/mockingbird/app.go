@@ -4,20 +4,19 @@ import "time"
 
 type ULID string
 type TestSuite string
-
-type status string
-type state string
+type Status string
+type State string
 
 // The possible statuses a test suite can have
 const (
-	QUEUED  status = "queued"
+	QUEUED  Status = "queued"
 	RUNNING        = "running"
 	DONE           = "done"
 )
 
 // The possible states a test suite can have
 const (
-	PENDING    state = "pending"
+	PENDING    State = "pending"
 	SUCCESSFUL       = "successful"
 	FAILED           = "failed"
 )
@@ -30,11 +29,11 @@ type Dashboard struct {
 
 // Stats shows the cumulative stats for the test suites
 type Stats struct {
-	LatestDoneTestSuiteState   state
-	LatestDoneTestSuiteRunTime time.Time
+	LatestDoneTestSuiteState   State
+	LatestDoneTestSuiteRunTime time.Duration
 
-	LatestDoneFullTestSuiteState   state
-	LatestDoneFullTestSuiteRunTime time.Time
+	LatestDoneFullTestSuiteState   State
+	LatestDoneFullTestSuiteRunTime time.Duration
 
 	TestSuiteSuccessRate float64
 	TestSuiteRunCounter  int
@@ -44,9 +43,9 @@ type Stats struct {
 
 	AverageTestSuiteRunTime   time.Duration
 	AverageTestSuiteQueueTime time.Duration
-	SlowestTestSuiteRunTime   time.Duration
 
-	SlowestTestSuiteName TestSuite
+	SlowestTestSuiteRunTime time.Duration
+	SlowestTestSuiteName    TestSuite
 }
 
 // TestResults contains a list of test results
@@ -59,15 +58,15 @@ type TestResults struct {
 type TestResult struct {
 	ID ULID
 
-	Status    status
-	State     state
+	Status    Status
+	State     State
 	TestSuite TestSuite
 
 	Log    []byte
 	LogURL string // URL to S3 fil
 
 	StartTime time.Time
-	RunTime   time.Time
+	RunTime   time.Duration
 }
 
 // App defines the interface for the mockingbird application

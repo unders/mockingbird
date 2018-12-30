@@ -6,5 +6,5 @@ import (
 
 func TestSearch(t *testing.T) {
 	//t.Error("Test search failed")
-	t.Log("no failure")
+	t.Log("doing the test...")
 }

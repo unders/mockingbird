@@ -69,7 +69,7 @@ func run(o Options) error {
 	format = "Options%+v"
 	l.Info(fmt.Sprintf(format, o))
 
-	builder, err := app.Create(app.Builder{
+	builder, err := app.Create(app.Options{
 		Logger:     o.ErrorLog,
 		FaviconDir: o.FaviconDir,
 	})

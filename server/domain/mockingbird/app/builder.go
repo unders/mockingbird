@@ -11,23 +11,27 @@ import (
 	"github.com/unders/mockingbird/server/domain/mockingbird/mock"
 )
 
+// Options defines the required input to function app.Create
+type Options struct {
+	Logger     *log.Logger
+	FaviconDir string
+}
+
 // Create creates the application
-func Create(b Builder) (*Builder, error) {
-	// do the setup here
-	b.app = &Mockingbird{}
-	b.favicon = handler.Favicons(b.FaviconDir)
+func Create(o Options) (*Builder, error) {
+	b := Builder{
+		log:     o.Logger,
+		app:     &Mockingbird{},
+		favicon: handler.Favicons(o.FaviconDir),
+	}
 	return &b, nil
 }
 
 // Builder builds the application
 type Builder struct {
-	// Required input
-	Logger     *log.Logger
-	FaviconDir string
-
-	// constructed in create method
 	favicon func(*http.Request) (http.Handler, bool)
 	app     mockingbird.App
+	log     *log.Logger
 }
 
 // Favicon returns a http.Handler for favicons
@@ -47,5 +51,5 @@ func (b *Builder) HTMLAdapter() mockingbird.HTMLAdapter {
 
 // Log returns the mockingbird.Log
 func (b *Builder) Log() mockingbird.Log {
-	return &mockingbird.Logger{Log: b.Logger}
+	return &mockingbird.Logger{Log: b.log}
 }

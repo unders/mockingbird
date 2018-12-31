@@ -31,6 +31,9 @@ func FaviconsBox(box *packr.Box) func(r *http.Request) (http.Handler, bool) {
 	mux := faviconMux(serveFile)
 
 	return func(req *http.Request) (http.Handler, bool) {
+		if http.MethodGet != req.Method {
+			return nil, false
+		}
 		handler, found := mux[req.URL.EscapedPath()]
 		return handler, found
 	}
@@ -62,6 +65,10 @@ func Favicons(dir string) func(r *http.Request) (http.Handler, bool) {
 	h := faviconMux(serveFile)
 
 	return func(req *http.Request) (http.Handler, bool) {
+		if http.MethodGet != req.Method {
+			return nil, false
+		}
+
 		handler, found := h[req.URL.EscapedPath()]
 		return handler, found
 	}

@@ -1,6 +1,12 @@
 package html
 
-import "github.com/unders/mockingbird/server/domain/mockingbird"
+import (
+	"net/http"
+
+	"github.com/unders/mockingbird/server/pkg/errs"
+
+	"github.com/unders/mockingbird/server/domain/mockingbird"
+)
 
 // Adapter implements the mockingbird.HTMLAdapter interface
 //
@@ -12,7 +18,8 @@ import "github.com/unders/mockingbird/server/domain/mockingbird"
 //
 //
 type Adapter struct {
-	App mockingbird.App
+	Tmpl *Template
+	App  mockingbird.App
 }
 
 // Verifies that *Adapter implements mockingbird.HTMLAdapter interface
@@ -24,27 +31,62 @@ var _ mockingbird.HTMLAdapter = &Adapter{}
 
 // Dashboard returns the dashboard page
 func (a Adapter) Dashboard() (code int, body []byte, err error) {
-	return 200, []byte("Dashboard"), nil
-}
+	d, err := a.App.Dashboard()
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
 
-// RunTest starts a test suite
-func (a Adapter) RunTest() (id string, code int, cody []byte, err error) {
-	return "100", 200, []byte("RunTest"), nil
-}
+	b, err := a.Tmpl.Dashboard(d)
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
 
-// ShowTestResult returns the ShowTestResult page
-func (a Adapter) ShowTestResult(id string) (code int, body []byte, err error) {
-	return 200, []byte("Test result page"), nil
+	return 200, b, nil
 }
 
 // ListTestResults returns the ListTestResults page
-func (a Adapter) ListTestResults(service string) (code int, body []byte, err error) {
-	return 200, []byte("List test result"), nil
+func (a Adapter) ListTests(pageToken string) (code int, body []byte, err error) {
+	tests, err := a.App.ListTests(pageToken)
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+	b, err := a.Tmpl.ListTest(tests)
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+
+	return 200, b, nil
 }
 
-// RunTestForService starts a test suite for a service
-func (a Adapter) RunTestForService(service string) (id string, code int, body []byte, err error) {
-	return "50045", 200, []byte("List test result"), nil
+// ShowTestResult returns the ShowTestResult page
+func (a Adapter) ShowTest(id mockingbird.ULID) (code int, body []byte, err error) {
+	test, err := a.App.ShowTest(id)
+	if errs.IsNotFound(err) {
+		return http.StatusNotFound, a.Tmpl.ErrorNotFound(), err
+	}
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+	b, err := a.Tmpl.ShowTest(test)
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+
+	return 200, b, nil
+}
+
+// RunTest starts a test suite
+func (a Adapter) RunTest(ts mockingbird.TestSuite) (id mockingbird.ULID, code int, body []byte, err error) {
+	ulid, err := a.App.RunTest(ts)
+	if errs.IsNotFound(err) {
+		return ulid, http.StatusNotFound, a.Tmpl.ErrorNotFound(), err
+	}
+	if err != nil {
+		return ulid, http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+
+	// When no error, code, body, nil are ignored...
+	return ulid, 200, nil, nil
 }
 
 //
@@ -53,10 +95,10 @@ func (a Adapter) RunTestForService(service string) (id string, code int, body []
 
 // ErrorNotFound returns error not found page
 func (a Adapter) ErrorNotFound() (body []byte) {
-	return []byte("ErrorNotFound page")
+	return a.Tmpl.ErrorNotFound()
 }
 
 // InvalidURL returns error an Invalid URL page
 func (a Adapter) InvalidURL() (body []byte) {
-	return []byte("InvalidURL page")
+	return a.Tmpl.InvalidURL()
 }

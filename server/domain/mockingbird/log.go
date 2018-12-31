@@ -7,7 +7,9 @@ import (
 // Log interface
 type Log interface {
 	Error(msg string)
+	Notice(msg string)
 	Info(msg string)
+	Debug(msg string)
 }
 
 //
@@ -28,8 +30,20 @@ func (l *Logger) Error(msg string) {
 	l.Log.Printf(format, msg)
 }
 
-// Error logs msg with INFO prefix
+// Notice logs msg with Notice prefix
+func (l *Logger) Notice(msg string) {
+	const format = "NOTICE: %s\n"
+	l.Log.Printf(format, msg)
+}
+
+// Info logs msg with INFO prefix
 func (l *Logger) Info(msg string) {
 	const format = "INFO: %s\n"
+	l.Log.Printf(format, msg)
+}
+
+// Debug logs msg with Debug prefix
+func (l *Logger) Debug(msg string) {
+	const format = "Debug: %s\n"
 	l.Log.Printf(format, msg)
 }

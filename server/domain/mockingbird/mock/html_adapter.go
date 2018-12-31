@@ -1,6 +1,11 @@
 package mock
 
-import "github.com/unders/mockingbird/server/domain/mockingbird"
+import (
+	"net/http"
+
+	"github.com/unders/mockingbird/server/domain/mockingbird"
+	"github.com/unders/mockingbird/server/pkg/errs"
+)
 
 // HTMLAdapter is used for tests
 type HTMLAdapter struct {
@@ -27,17 +32,18 @@ func (a HTMLAdapter) Dashboard() (code int, body []byte, err error) {
 	return a.Code, b, a.Err
 }
 
-// RunTest starts a test suite
-func (a HTMLAdapter) RunTest() (id string, code int, cody []byte, err error) {
-	b := a.Body
+// ListTests returns the test results page
+func (a HTMLAdapter) ListTests(pageToken string) (code int, body []byte, err error) {
+	b := append(a.Body, "list test result page"...)
+
 	if a.Err != nil {
-		b = append(b, "with runTest error"...)
+		b = append(b, " with error"...)
 	}
-	return "test-suite-id", a.Code, b, a.Err
+	return a.Code, b, a.Err
 }
 
-// ShowTestResult returns the ShowTestResult page
-func (a HTMLAdapter) ShowTestResult(id string) (code int, body []byte, err error) {
+// ShowTest returns the test result page
+func (a HTMLAdapter) ShowTest(id mockingbird.ULID) (code int, body []byte, err error) {
 	if a.IDErr != nil {
 		b := append(a.Body, "HasIdError for "...)
 		b = append(b, id...)
@@ -52,35 +58,17 @@ func (a HTMLAdapter) ShowTestResult(id string) (code int, body []byte, err error
 	return a.Code, b, a.Err
 }
 
-// ListTestResults returns the ListTestResults page
-func (a HTMLAdapter) ListTestResults(service string) (code int, body []byte, err error) {
-	b := append(a.Body, "list test result page"...)
-
-	if service != "" {
-		b = append(b, " for service="...)
-		b = append(b, service...)
+// RunTest starts a test suite
+func (a HTMLAdapter) RunTest(ts mockingbird.TestSuite) (id mockingbird.ULID, code int, cody []byte, err error) {
+	if ts == "" {
+		return "", http.StatusNotFound, []byte("RunTest failed with 404 not found"), errs.NotFound("Not found")
 	}
 
-	if a.Err != nil {
-		b = append(b, " with error"...)
-	}
-	return a.Code, b, a.Err
-}
-
-// RunTestForService starts a test suite for a service
-func (a HTMLAdapter) RunTestForService(service string) (id string, code int, body []byte, err error) {
-	if a.ServiceErr != nil {
-		b := append(a.Body, "HasServiceError for "...)
-		b = append(b, service...)
-
-		return "", a.Code, b, a.ServiceErr
-	}
 	b := a.Body
 	if a.Err != nil {
-		b = append(b, "with runTestForService error service="...)
-		b = append(b, service...)
+		b = append(b, "with runTest error"...)
 	}
-	return "test-suite-x", a.Code, b, a.Err
+	return "test-suite-id", a.Code, b, a.Err
 }
 
 //

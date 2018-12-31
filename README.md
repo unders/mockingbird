@@ -3,7 +3,7 @@
 Mockingbird is a system testing framework built for the serverless world.
 
 ## TODO
-* Use S3 Bucket as the database: store the results aa JSON: bucket/{ stats.json | log-ulid.json }
+* Use S3 Bucket as the database: store result as Json: bucket/{ stats.json | log-uuid.json }
 * Add tests for favicons handler
 
 ## Setup
@@ -73,6 +73,7 @@ https://realfavicongenerator.net/favicon_result?file_id=p1cv6mgrreivv10gm1bu81or
 * [Go tracing](https://opencensus.io/quickstart/go/tracing/)
 * [xray exporter](https://opencensus.io/exporters/supported-exporters/go/xray/)
 * [stackdriver exporter](https://opencensus.io/exporters/supported-exporters/go/stackdriver/)
+
 
 ## References
 * [ulid](https://github.com/ulid/spec)

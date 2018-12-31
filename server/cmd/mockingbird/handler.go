@@ -37,19 +37,19 @@ func createHandler(h handler) http.Handler {
 		}
 
 		switch route {
+		// GET
 		case rest.Route{Method: http.MethodGet, Path: ""}:
 			url := "/v1/dashboard"
 			http.Redirect(w, req, url, http.StatusSeeOther)
 		case rest.Route{Method: http.MethodGet, Path: "/v1/dashboard"}:
 			h.showDashboard(w, req)
+		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
+			h.listTests(w, req)
+		case rest.Route{Method: http.MethodGet, Path: "/v1/tests/*"}:
+			h.showTest(w, req, path)
+		// POST
 		case rest.Route{Method: http.MethodPost, Path: "/v1/tests"}:
 			h.runTest(w, req)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/tests/*"}:
-			h.showTestResult(w, req, path)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
-			h.listTestResults(w, req)
-		case rest.Route{Method: http.MethodPost, Path: "/v1/tests/*/services/*"}:
-			h.runTestForService(w, req, path)
 		default:
 			if favicon, found := h.Favicon(req); found {
 				h.logRequest(req, http.StatusOK, nil)
@@ -57,7 +57,7 @@ func createHandler(h handler) http.Handler {
 				return
 			}
 			err := errors.New("route not found")
-			h.write(w, req, http.StatusBadRequest, h.HTML.ErrorNotFound(), err)
+			h.write(w, req, http.StatusNotFound, h.HTML.ErrorNotFound(), err)
 		}
 	}
 
@@ -72,30 +72,20 @@ func (h *handler) showDashboard(w http.ResponseWriter, req *http.Request) {
 	h.write(w, req, code, b, err)
 }
 
-func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
-	id, code, body, err := h.HTML.RunTest()
-	if err != nil {
-		h.write(w, req, code, body, err)
-		return
-	}
-
-	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%s", id), http.StatusSeeOther)
+func (h *handler) listTests(w http.ResponseWriter, req *http.Request) {
+	code, b, err := h.HTML.ListTests(req.URL.Query().Get("page_token"))
+	h.write(w, req, code, b, err)
 }
 
-func (h *handler) showTestResult(w http.ResponseWriter, req *http.Request, path rest.Path) {
+func (h *handler) showTest(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	id := path.String(2, "")
-	code, b, err := h.HTML.ShowTestResult(id)
+	code, b, err := h.HTML.ShowTest(mockingbird.ULID(id))
 	h.write(w, req, code, b, err)
 }
 
-func (h *handler) listTestResults(w http.ResponseWriter, req *http.Request) {
-	code, b, err := h.HTML.ListTestResults(req.URL.Query().Get("service"))
-	h.write(w, req, code, b, err)
-}
-
-func (h *handler) runTestForService(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	service := path.String(4, "")
-	id, code, body, err := h.HTML.RunTestForService(service)
+func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
+	ts := req.FormValue("test_suite")
+	id, code, body, err := h.HTML.RunTest(mockingbird.TestSuite(ts))
 	if err != nil {
 		h.write(w, req, code, body, err)
 		return
@@ -179,6 +169,12 @@ func (h *handler) logResponseFailure(req *http.Request, code int, err error) {
 func (h *handler) logRequest(req *http.Request, code int, err error) {
 	msg := http.StatusText(code)
 	if err != nil {
+		if code < http.StatusInternalServerError {
+			const format = "%s %s    <-    %d %s    notice=%s"
+			h.Log.Notice(fmt.Sprintf(format, req.Method, req.URL.String(), code, msg, err))
+			return
+		}
+
 		const format = "%s %s    <-    %d %s    error=%s"
 		h.Log.Error(fmt.Sprintf(format, req.Method, req.URL.String(), code, msg, err))
 		return

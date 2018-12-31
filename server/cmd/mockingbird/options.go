@@ -25,7 +25,8 @@ type Options struct {
 	ServerShutdownTimeout   time.Duration
 
 	// Web
-	FaviconDir string
+	FaviconDir  string
+	TemplateDir string
 
 	Log      mockingbird.Log
 	ErrorLog *log.Logger

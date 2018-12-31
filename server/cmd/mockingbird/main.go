@@ -47,7 +47,8 @@ func options() Options {
 		ServerIdleTimeout:       20 * time.Second,  // 20
 		ServerShutdownTimeout:   300 * time.Second, // 300s = 5*60s => 5 minutes
 
-		FaviconDir: "./web/mockingbird/public/favicon",
+		FaviconDir:  "./web/mockingbird/public/favicon",
+		TemplateDir: "./web/mockingbird/tmpl",
 
 		StartTime: time.Now().UTC(),
 		Log:       &mockingbird.Logger{Log: l},
@@ -70,8 +71,9 @@ func run(o Options) error {
 	l.Info(fmt.Sprintf(format, o))
 
 	builder, err := app.Create(app.Options{
-		Logger:     o.ErrorLog,
-		FaviconDir: o.FaviconDir,
+		Logger:      o.ErrorLog,
+		FaviconDir:  o.FaviconDir,
+		TemplateDir: o.TemplateDir,
 	})
 	if err != nil {
 		return errors.Wrap(err, "app.Create() failed")

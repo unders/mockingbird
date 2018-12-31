@@ -3,6 +3,7 @@ package app
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/unders/mockingbird/server/pkg/handler"
 
@@ -13,16 +14,20 @@ import (
 
 // Options defines the required input to function app.Create
 type Options struct {
-	Logger     *log.Logger
-	FaviconDir string
+	Logger      *log.Logger
+	FaviconDir  string
+	TemplateDir string
 }
 
 // Create creates the application
 func Create(o Options) (*Builder, error) {
 	b := Builder{
-		log:     o.Logger,
-		app:     &Mockingbird{},
+		log: o.Logger,
+		// TODO: Change to real app when it is implemented
+		// app:     &Mockingbird{},
+		app:     &mock.AppMockingbird{Now: time.Now().UTC()},
 		favicon: handler.Favicons(o.FaviconDir),
+		tmpl:    &html.Template{TemplateDir: o.TemplateDir},
 	}
 	return &b, nil
 }
@@ -32,6 +37,7 @@ type Builder struct {
 	favicon func(*http.Request) (http.Handler, bool)
 	app     mockingbird.App
 	log     *log.Logger
+	tmpl    *html.Template
 }
 
 // Favicon returns a http.Handler for favicons
@@ -46,7 +52,7 @@ func (b *Builder) HTMLMockAdapter() mockingbird.HTMLAdapter {
 
 // HTMLAdapter returns the mockingbird.HTMLAdapter
 func (b *Builder) HTMLAdapter() mockingbird.HTMLAdapter {
-	return &html.Adapter{App: b.app}
+	return &html.Adapter{App: b.app, Tmpl: b.tmpl}
 }
 
 // Log returns the mockingbird.Log

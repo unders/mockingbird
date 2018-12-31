@@ -1,9 +1,11 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -29,10 +31,6 @@ func TestAPI(t *testing.T) {
 
 	t.Run("GET  /v1/tests/{id} ReturnsTestResultPage", getTest)
 	t.Run("GET  /v1/tests/ ReturnsTestResultListPage", getTestResults)
-
-	t.Run("POST  /v1/tests/-/services/{service-name} StartsATestSuite  Redirects", postServiceTests)
-	t.Run("POST  /v1/tests/-/services/{service-name} WhenInvalidServiceName  ReturnsError", postServiceTestsWhenInvalidService)
-	t.Run("POST  /v1/tests/-/services/{service-name} WhenServerError  ReturnsError", postServiceTestsWhenServerError)
 }
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
@@ -194,7 +192,7 @@ func postDashboard(t *testing.T) {
 	}{
 		{
 			URL:            ts.URL + "/v1/dashboard",
-			wantCode:       http.StatusBadRequest,
+			wantCode:       http.StatusNotFound,
 			wantBody:       []byte("Error: Not Found"),
 			wantRequestURL: "/v1/dashboard",
 		},
@@ -228,14 +226,29 @@ func postTests(t *testing.T) {
 	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
 	defer ts.Close()
 
+	testSuiteForm := url.Values{}
+	testSuiteForm.Set("test_suite", "test:all")
+
 	testCases := []struct {
 		URL            string
+		contentType    string
+		body           io.Reader
 		wantCode       int
 		wantBody       []byte
 		wantRequestURL string
 	}{
 		{
+			URL:            ts.URL + "/v1/tests?test_suite=test:all",
+			contentType:    "text/html",
+			body:           strings.NewReader("body"),
+			wantCode:       http.StatusOK,
+			wantBody:       []byte("Redirects to test result page for id=test-suite-id"),
+			wantRequestURL: "/v1/tests/test-suite-id",
+		},
+		{
 			URL:            ts.URL + "/v1/tests",
+			contentType:    "application/x-www-form-urlencoded",
+			body:           strings.NewReader(testSuiteForm.Encode()),
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("Redirects to test result page for id=test-suite-id"),
 			wantRequestURL: "/v1/tests/test-suite-id",
@@ -244,7 +257,7 @@ func postTests(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
+			resp, err := http.Post(tc.URL, tc.contentType, tc.body)
 			testdata.AssertNil(t, err)
 			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 
@@ -278,10 +291,10 @@ func postTestsWhenServerError(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/tests/",
+			URL:            ts.URL + "/v1/tests/?test_suite=xxx",
 			wantCode:       http.StatusInternalServerError,
 			wantBody:       []byte("Body: with runTest error"),
-			wantRequestURL: "/v1/tests/",
+			wantRequestURL: "/v1/tests/?test_suite=xxx",
 		},
 	}
 
@@ -373,151 +386,11 @@ func getTestResults(t *testing.T) {
 			wantBody:       []byte("body: list test result page"),
 			wantRequestURL: "/v1/tests/",
 		},
-		{
-			URL:            ts.URL + "/v1/tests/?service=service-name1",
-			wantCode:       http.StatusOK,
-			wantBody:       []byte("body: list test result page for service=service-name1"),
-			wantRequestURL: "/v1/tests/?service=service-name1",
-		},
-		{
-			URL:            ts.URL + "/v1/tests?service=service-name2",
-			wantCode:       http.StatusOK,
-			wantBody:       []byte("body: list test result page for service=service-name2"),
-			wantRequestURL: "/v1/tests?service=service-name2",
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
 			resp, err := http.Get(tc.URL)
-			testdata.AssertNil(t, err)
-			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
-
-			if tc.wantCode != resp.StatusCode {
-				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
-			}
-
-			b, err := ioutil.ReadAll(resp.Body)
-			testdata.AssertNil(t, err)
-			if !reflect.DeepEqual(tc.wantBody, b) {
-				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
-			}
-
-			got := resp.Request.URL.RequestURI()
-			if tc.wantRequestURL != got {
-				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
-			}
-		})
-	}
-}
-
-func postServiceTests(t *testing.T) {
-	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("Redirects to ")})
-	defer ts.Close()
-
-	testCases := []struct {
-		URL            string
-		wantCode       int
-		wantBody       []byte
-		wantRequestURL string
-	}{
-		{
-			URL:            ts.URL + "/v1/tests/-/services/service-x",
-			wantCode:       http.StatusOK,
-			wantBody:       []byte("Redirects to test result page for id=test-suite-x"),
-			wantRequestURL: "/v1/tests/test-suite-x",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run("", func(t *testing.T) {
-			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
-			testdata.AssertNil(t, err)
-			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
-
-			if tc.wantCode != resp.StatusCode {
-				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
-			}
-
-			b, err := ioutil.ReadAll(resp.Body)
-			testdata.AssertNil(t, err)
-			if !reflect.DeepEqual(tc.wantBody, b) {
-				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
-			}
-
-			got := resp.Request.URL.RequestURI()
-			if tc.wantRequestURL != got {
-				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
-			}
-		})
-	}
-}
-
-func postServiceTestsWhenInvalidService(t *testing.T) {
-	serr := errors.New("service name is invalid")
-	ts := testServer(mock.HTMLAdapter{Code: http.StatusBadRequest, Body: []byte("Body: "), ServiceErr: serr})
-	defer ts.Close()
-
-	testCases := []struct {
-		URL            string
-		wantCode       int
-		wantBody       []byte
-		wantRequestURL string
-	}{
-		{
-			URL:            ts.URL + "/v1/tests/-/services/service-x",
-			wantCode:       http.StatusBadRequest,
-			wantBody:       []byte("Body: HasServiceError for service-x"),
-			wantRequestURL: "/v1/tests/-/services/service-x",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run("", func(t *testing.T) {
-			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
-			testdata.AssertNil(t, err)
-			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
-
-			if tc.wantCode != resp.StatusCode {
-				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
-			}
-
-			b, err := ioutil.ReadAll(resp.Body)
-			testdata.AssertNil(t, err)
-			if !reflect.DeepEqual(tc.wantBody, b) {
-				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
-			}
-
-			got := resp.Request.URL.RequestURI()
-			if tc.wantRequestURL != got {
-				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
-			}
-		})
-	}
-}
-
-func postServiceTestsWhenServerError(t *testing.T) {
-	serr := errors.New("server error")
-	ts := testServer(mock.HTMLAdapter{Code: http.StatusInternalServerError, Body: []byte("Body: "), Err: serr})
-	defer ts.Close()
-
-	testCases := []struct {
-		URL            string
-		wantCode       int
-		wantBody       []byte
-		wantRequestURL string
-	}{
-		{
-			URL:            ts.URL + "/v1/tests/-/services/service-x",
-			wantCode:       http.StatusInternalServerError,
-			wantBody:       []byte("Body: with runTestForService error service=service-x"),
-			wantRequestURL: "/v1/tests/-/services/service-x",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run("", func(t *testing.T) {
-			resp, err := http.Post(tc.URL, "text/html", strings.NewReader("body"))
 			testdata.AssertNil(t, err)
 			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
 

@@ -114,7 +114,8 @@ func (m *AppMockingbird) RunTest(s mockingbird.TestSuite) (mockingbird.ULID, err
 	case TestAll:
 		return ULID3, nil
 	default:
-		return "", errors.Errorf("Invalid test suite name: `%s`", s)
+		msg := fmt.Sprintf("Invalid test suite name: `%s`", s)
+		return "", errs.NotFound(msg)
 	}
 }
 

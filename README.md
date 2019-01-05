@@ -30,12 +30,11 @@ mage
 GET  http://localhost:8080/ -> redirect-to: http://localhost:8080/v1/dashboard
 GET  http://localhost:8080/v1/dashboard
 
-POST http://localhost:8080/v1/tests/
-GET  http://localhost:8080/v1/tests/{ID}
 GET  http://localhost:8080/v1/tests/
+GET  http://localhost:8080/v1/tests/{ID}
 
-GET  http://localhost:8080/v1/tests/?service=<service>
-POST http://localhost:8080/v1/tests/-/services/<service>
+
+POST http://localhost:8080/v1/tests/
 ```
 
 #e6cece

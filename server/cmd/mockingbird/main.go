@@ -30,15 +30,26 @@ var (
 )
 
 func options() Options {
-	var addr = ":8080"
+	var (
+		addr  = ":8080"
+		local = false
+	)
 	flag.StringVar(&addr, "http.addr", addr, "HTTP address.")
+	flag.BoolVar(&local, "l", local, "if app is running on a local dev server")
 	flag.Parse()
+
+	env := mockingbird.Env(os.Getenv("ENVIRONMENT"))
+	if local {
+		env = mockingbird.DEV
+	}
 
 	l := log.New(os.Stderr, "", 0)
 	return Options{
 		Timestamp:  timestamp,
 		CommitHash: commitHash,
 		GitTag:     gitTag,
+
+		Env: env,
 
 		ServerAddr:              addr,
 		ServerReadHeaderTimeout: 30 * time.Second,  // 30s
@@ -71,6 +82,7 @@ func run(o Options) error {
 	l.Info(fmt.Sprintf(format, o))
 
 	builder, err := app.Create(app.Options{
+		Env:         o.Env,
 		Logger:      o.ErrorLog,
 		FaviconDir:  o.FaviconDir,
 		TemplateDir: o.TemplateDir,

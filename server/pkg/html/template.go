@@ -40,7 +40,7 @@ func newTemplate(root string) (*Template, error) {
 
 	l := filepath.Join(root, "layout", "*")
 	if t, err = template.ParseGlob(l); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.Wrapf(err, "template.ParseGlob(%s)", l)
 	}
 
 	var parts []string
@@ -58,11 +58,13 @@ func newTemplate(root string) (*Template, error) {
 	}
 
 	if err = filepath.Walk(partdir, walkparts); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.Wrap(err, "filepath.Walk(partdir, walkparts) failed")
 	}
 
-	if t, err = t.ParseFiles(parts...); err != nil {
-		return nil, errors.WithStack(err)
+	if len(parts) > 0 {
+		if t, err = t.ParseFiles(parts...); err != nil {
+			return nil, errors.Wrap(err, "t.ParseFiles(parts...) failed")
+		}
 	}
 
 	page := map[string]string{}
@@ -106,15 +108,15 @@ func (t *Template) Execute(layout, filepath string, data interface{}) ([]byte, e
 		return nil, errs.NotFound(msg)
 	}
 
+	tmpl, err := tmpl.Clone()
+	if err != nil {
+		return nil, errors.Wrapf(err, "Could not clone %s", layout)
+	}
+
 	page, ok := t.Page[filepath]
 	if !ok {
 		msg := fmt.Sprintf("page %s not found", filepath)
 		return nil, errs.NotFound(msg)
-	}
-
-	tmpl, err := tmpl.Clone()
-	if err != nil {
-		return nil, errors.Errorf("Could not clone %s", layout)
 	}
 
 	tmpl, err = tmpl.Parse(page)

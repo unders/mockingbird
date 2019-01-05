@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/unders/mockingbird/server/pkg/handler"
 
 	"github.com/unders/mockingbird/server/domain/mockingbird"
@@ -14,6 +16,7 @@ import (
 
 // Options defines the required input to function app.Create
 type Options struct {
+	Env         mockingbird.Env
 	Logger      *log.Logger
 	FaviconDir  string
 	TemplateDir string
@@ -21,13 +24,18 @@ type Options struct {
 
 // Create creates the application
 func Create(o Options) (*Builder, error) {
+	tmpl, err := newTemplate(o.Env, o.TemplateDir)
+	if err != nil {
+		return nil, err
+	}
+
 	b := Builder{
 		log: o.Logger,
 		// TODO: Change to real app when it is implemented
 		// app:     &Mockingbird{},
 		app:     &mock.AppMockingbird{Now: time.Now().UTC()},
 		favicon: handler.Favicons(o.FaviconDir),
-		tmpl:    &html.Template{TemplateDir: o.TemplateDir},
+		tmpl:    tmpl,
 	}
 	return &b, nil
 }
@@ -58,4 +66,19 @@ func (b *Builder) HTMLAdapter() mockingbird.HTMLAdapter {
 // Log returns the mockingbird.Log
 func (b *Builder) Log() mockingbird.Log {
 	return &mockingbird.Logger{Log: b.log}
+}
+
+//
+// private
+//
+func newTemplate(env mockingbird.Env, templateDir string) (tmpl *html.Template, err error) {
+	if mockingbird.DEV == env {
+		tmpl, err = html.NewReloadableTemplate(templateDir)
+		err = errors.Wrapf(err, "html.NewReloadableTemplate(%s) failed", templateDir)
+		return tmpl, err
+	}
+
+	tmpl, err = html.NewTemplate(templateDir)
+	err = errors.Wrapf(err, "html.NewsTemplate(%s) failed", templateDir)
+	return tmpl, err
 }

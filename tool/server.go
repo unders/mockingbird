@@ -53,7 +53,7 @@ func (Server) Start() error {
 		Server.build,
 	)
 
-	return sh.RunV("mockingbird")
+	return sh.RunV("mockingbird", "-l")
 }
 
 func (Server) build() error {

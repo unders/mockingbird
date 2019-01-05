@@ -14,6 +14,8 @@ type Options struct {
 	CommitHash string
 	GitTag     string
 
+	Env mockingbird.Env
+
 	StartTime time.Time
 
 	// http.Server settings

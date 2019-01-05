@@ -1,0 +1,40 @@
+{{- define "header" }}
+    <div class="header">
+        <ul>
+            <li>Mockingbird</li>
+            <li>/</li>
+            <li><a href="{{.Path.Dashboard}}">Dashboard</a></li>
+            <li><a href="{{.Path.Dashboard}}">...</a></li>
+            <li><a href="{{.Path.ShowTest "01BX5ZZKBKACTAV9WEVGEMMVRY" }}">test:all</a></li>
+        </ul>
+    </div>
+{{- end}}
+{{- define "content" }}
+    <div class="stats">
+
+
+        {{.Stats.LatestDoneTestSuiteState}}
+
+        {{/*
+        LatestDoneTestSuiteState   State
+        LatestDoneTestSuiteRunTime time.Duration
+
+        LatestDoneFullTestSuiteState   State
+        LatestDoneFullTestSuiteRunTime time.Duration
+
+        TestSuiteSuccessRate float64
+        TestSuiteRunCounter  int
+
+        FullTestSuiteSuccessRate float64
+        FullTesSuiteRunCounter   int
+
+        AverageTestSuiteRunTime   time.Duration
+        AverageTestSuiteQueueTime time.Duration
+
+        SlowestTestSuiteRunTime time.Duration
+        SlowestTestSuiteName    TestSuite
+        */}}
+    </div>
+
+{{- end}}
+

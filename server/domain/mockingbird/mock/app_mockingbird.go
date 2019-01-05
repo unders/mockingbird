@@ -66,7 +66,7 @@ func (m *AppMockingbird) Dashboard() (mockingbird.Dashboard, error) {
 			TestSuiteRunCounter:  17931,
 
 			FullTestSuiteSuccessRate: 0.99,
-			FullTesSuiteRunCounter:   19840,
+			FullTestSuiteRunCounter:  9840,
 
 			AverageTestSuiteRunTime:   55 * time.Second,
 			AverageTestSuiteQueueTime: 106 * time.Second,

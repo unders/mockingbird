@@ -1,40 +1,168 @@
 {{- define "header" }}
+    <style type="text/css">
+        .header {
+            background: #3771E0;
+            color: #ffffff;
+            box-shadow: 0 3px 4px 0 rgba(0,0,0,.2), 0 3px 3px -2px rgba(0,0,0,.14), 0 1px 8px 0 rgba(0,0,0,.12);
+        }
+        .header-nav {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            font-size: 1.0rem;
+
+            display: flex;
+      }
+        .header-link {
+            color: inherit;
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .header-link:hover {
+            opacity: 0.8;
+        }
+
+
+
+        .page-title {
+            font-weight: 300;
+            margin:0;
+            padding: 20px;
+            font-size: 1.5rem;
+            color: #585858;
+
+            border-bottom: 1px solid #d3d3d3;
+        }
+
+
+
+        .stats {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .stats-card {
+            margin-right: 80px;
+        }
+        .stats-title {
+            font-weight: 300;
+            font-size: 1.5rem;
+            color: #585858;
+        }
+        .stats-table {
+            color: #585858;
+            border-spacing: 0;
+
+        }
+        .stats-row {
+            padding: 10px;
+        }
+        .stats-row:nth-child(odd) {
+           background: #FAFAFA;
+        }
+
+        .stats-row span:nth-child(even) {
+            text-transform: capitalize;
+        }
+
+        .stats-row span:nth-child(odd) {
+            display: inline-block;
+        }
+
+        .table-small {
+            min-width: 240px;
+        }
+        .table-small-first {
+            width: 130px;
+        }
+
+        .table-large {
+            min-width: 340px;
+        }
+        .table-large-first {
+            width: 240px;
+        }
+
+    </style>
+
     <div class="header">
-        <ul>
-            <li>Mockingbird</li>
-            <li>/</li>
-            <li><a href="{{.Path.Dashboard}}">Dashboard</a></li>
-            <li><a href="{{.Path.Dashboard}}">...</a></li>
-            <li><a href="{{.Path.ShowTest "01BX5ZZKBKACTAV9WEVGEMMVRY" }}">test:all</a></li>
+        <ul class="header-nav">
+            <li><a class="header-link" href="{{.Path.Dashboard}}">Dashboard</a></li>
+            <li><a class="header-link" href="{{.Path.ListTests}}">Test history</a></li>
+            <li><a class="header-link" href="{{.Path.ListTestSuites}}">Test suites</a></li>
         </ul>
     </div>
-{{- end}}
+{{- end }}
+
 {{- define "content" }}
+    <h1 class="page-title">Dashboard</h1>
     <div class="stats">
 
+        <div class="stats-card">
+            <h2 class="stats-title">Latest test suite</h2>
+            <div class="stats-table table-small">
+                <div class="stats-row">
+                    <span class="table-small-first">State</span>
+                    <span>{{.Stats.LatestDoneTestSuiteState}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Test time</span>
+                    <span>{{.Stats.LatestDoneTestSuiteRunTime}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+           <h2 class="stats-title">Latest test:all</h2>
+            <div class="stats-table table-small">
+                <div class="stats-row">
+                    <span class="table-small-first">State</span>
+                    <span>{{.Stats.LatestDoneFullTestSuiteState}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Test time</span>
+                    <span>{{.Stats.LatestDoneFullTestSuiteRunTime}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <h2 class="stats-title">Stats</h2>
+            <div class="stats-table table-large">
+                <div class="stats-row">
+                    <span class="table-large-first">test:all success rate</span>
+                    <span>{{.Stats.FullTestSuiteSuccessRate}}%</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Total success rate</span>
+                    <span>{{.Stats.TestSuiteSuccessRate}}%</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Average test time</span>
+                    <span>{{.Stats.AverageTestSuiteRunTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Slowest test time</span>
+                    <span>{{.Stats.SlowestTestSuiteRunTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Slowest test suite</span>
+                    <span>{{.Stats.SlowestTestSuiteName}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Average queue time</span>
+                    <span>{{.Stats.AverageTestSuiteQueueTime}}</span>
+                </div>
 
-        {{.Stats.LatestDoneTestSuiteState}}
-
-        {{/*
-        LatestDoneTestSuiteState   State
-        LatestDoneTestSuiteRunTime time.Duration
-
-        LatestDoneFullTestSuiteState   State
-        LatestDoneFullTestSuiteRunTime time.Duration
-
-        TestSuiteSuccessRate float64
-        TestSuiteRunCounter  int
-
-        FullTestSuiteSuccessRate float64
-        FullTesSuiteRunCounter   int
-
-        AverageTestSuiteRunTime   time.Duration
-        AverageTestSuiteQueueTime time.Duration
-
-        SlowestTestSuiteRunTime time.Duration
-        SlowestTestSuiteName    TestSuite
-        */}}
+                <div class="stats-row">
+                    <span class="table-large-first">Total test runs</span>
+                    <span>{{.Stats.TestSuiteRunCounter}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">test:all runs</span>
+                    <span>{{.Stats.FullTestSuiteRunCounter}}</span>
+                </div>
+            </div>
+        </div>
     </div>
-
-{{- end}}
+{{- end -}}
 

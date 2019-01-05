@@ -39,7 +39,7 @@ type Stats struct {
 	TestSuiteRunCounter  int
 
 	FullTestSuiteSuccessRate float64
-	FullTesSuiteRunCounter   int
+	FullTestSuiteRunCounter  int
 
 	AverageTestSuiteRunTime   time.Duration
 	AverageTestSuiteQueueTime time.Duration

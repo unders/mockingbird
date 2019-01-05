@@ -26,15 +26,17 @@ const (
 
 // Path defines the applications URL
 type Path struct {
-	Dashboard string
-	ListTests string
-	showTest  string
+	Dashboard      string
+	ListTests      string
+	showTest       string
+	ListTestSuites string
 }
 
 var path = Path{
-	Dashboard: "/v1/dashboard",
-	ListTests: "/v1/tests/",
-	showTest:  "/v1/tests/%s",
+	Dashboard:      "/v1/dashboard",
+	ListTests:      "/v1/tests/",
+	showTest:       "/v1/tests/%s",
+	ListTestSuites: "/v1/tests/-/suites/",
 }
 
 // ShowTest returns path to show test page

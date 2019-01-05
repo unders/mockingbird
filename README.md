@@ -32,10 +32,14 @@ GET  http://localhost:8080/v1/dashboard
 
 GET  http://localhost:8080/v1/tests/
 GET  http://localhost:8080/v1/tests/{ID}
+GET  http://localhost:8080/v1/tests/-/suites/
 
 
 POST http://localhost:8080/v1/tests/
 ```
+
+
+ <li><a href="{{.Path.ShowTest "01BX5ZZKBKACTAV9WEVGEMMVRY" }}">test:all</a></li>
 
 #e6cece
 https://hatchful.shopify.com/editor/customize-logo

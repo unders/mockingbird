@@ -12,13 +12,29 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#e6cece">
     <title>{{block "title" .}} {{.Title}} {{end}}</title>
+
+    <style type="text/css">
+        .sans-serif {
+            font-family: -apple-system, BlinkMacSystemFont,
+            'avenir next', avenir,
+            helvetica, 'helvetica neue',
+            ubuntu,
+            roboto, noto,
+            'segoe ui', arial,
+            sans-serif;
+        }
+
+        body {
+            margin: 0;
+        }
+    </style>
 </head>
-<body>
+<body class="sans-serif">
 {{- block "header" . }}
     override me inside page file
 {{- end}}
 {{- block "content" . }}
     override me inside page file
-{{- end}}
+{{- end }}
 </body>
 </html>

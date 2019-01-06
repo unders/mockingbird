@@ -62,10 +62,10 @@ func (m *AppMockingbird) Dashboard() (mockingbird.Dashboard, error) {
 			LatestDoneFullTestSuiteState:   mockingbird.FAILED,
 			LatestDoneFullTestSuiteRunTime: 150 * time.Second,
 
-			TestSuiteSuccessRate: 0.90,
+			TestSuiteSuccessRate: 90,
 			TestSuiteRunCounter:  17931,
 
-			FullTestSuiteSuccessRate: 0.99,
+			FullTestSuiteSuccessRate: 99,
 			FullTestSuiteRunCounter:  9840,
 
 			AverageTestSuiteRunTime:   55 * time.Second,

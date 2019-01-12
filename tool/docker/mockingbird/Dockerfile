@@ -1,16 +1,30 @@
 FROM ubuntu:18.04
-MAINTAINER unders <anders@functionbox.io>
+LABEL maintainer="anders@functionbox.io"
 
 ##
-## Install Git, Go, wget
+## Install Git, Go, wget, unzip
 ##
-RUN apt-get update -y \
+RUN apt-get update && apt-get install -y \
    && apt-get install git -y \
    && apt-get install wget -y \
+   && apt-get install unzip -y \
    && wget https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz \
    && tar -xvf go1.11.4.linux-amd64.tar.gz \
    && rm go1.11.4.linux-amd64.tar.gz \
    && mv go /usr/local
+
+##
+## Install Protobuf 3.6.1
+##
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip \
+    && unzip protoc-3.6.1-linux-x86_64.zip -d protoc3 \
+    && rm protoc-3.6.1-linux-x86_64.zip \
+    && mv protoc3/bin/* /usr/local/bin/ \
+    && mv protoc3/include/* /usr/local/include/ \
+    && protoc --version
+    # Optional: change owner
+    # sudo chwon [user] /usr/local/bin/protoc
+    # sudo chwon -R [user] /usr/local/include/google
 
 
 ENV GOPATH=/go

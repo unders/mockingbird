@@ -20,6 +20,7 @@ type Options struct {
 	Logger      *log.Logger
 	FaviconDir  string
 	TemplateDir string
+	AssetDir    string
 }
 
 // Create creates the application
@@ -35,6 +36,7 @@ func Create(o Options) (*Builder, error) {
 		// app:     &Mockingbird{},
 		app:     &mock.AppMockingbird{Now: time.Now().UTC()},
 		favicon: handler.Favicons(o.FaviconDir),
+		assets:  http.Dir(o.AssetDir),
 		tmpl:    tmpl,
 	}
 	return &b, nil
@@ -46,11 +48,17 @@ type Builder struct {
 	app     mockingbird.App
 	log     *log.Logger
 	tmpl    *html.Template
+	assets  http.FileSystem
 }
 
 // Favicon returns a http.Handler for favicons
 func (b *Builder) Favicon() func(*http.Request) (http.Handler, bool) {
 	return b.favicon
+}
+
+// Assets returns a http.FileSystem for all public assets
+func (b *Builder) Assets() http.FileSystem {
+	return b.assets
 }
 
 // HTMLMockAdapter returns a mock.HTMLAdapter

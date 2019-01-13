@@ -58,8 +58,9 @@ func options() Options {
 		ServerIdleTimeout:       20 * time.Second,  // 20
 		ServerShutdownTimeout:   300 * time.Second, // 300s = 5*60s => 5 minutes
 
-		FaviconDir:  "./web/mockingbird/public/favicon",
+		FaviconDir:  "./web/mockingbird/favicon",
 		TemplateDir: "./web/mockingbird/tmpl",
+		AssetDir:    "./web/mockingbird/public",
 
 		StartTime: time.Now().UTC(),
 		Log:       &mockingbird.Logger{Log: l},
@@ -86,6 +87,7 @@ func run(o Options) error {
 		Logger:      o.ErrorLog,
 		FaviconDir:  o.FaviconDir,
 		TemplateDir: o.TemplateDir,
+		AssetDir:    o.AssetDir,
 	})
 	if err != nil {
 		return errors.Wrap(err, "app.Create() failed")
@@ -94,6 +96,7 @@ func run(o Options) error {
 	h := &ochttp.Handler{
 		Handler: createHandler(handler{
 			Favicon: builder.Favicon(),
+			Assets:  builder.Assets(),
 			HTML:    builder.HTMLAdapter(),
 			Log:     builder.Log(),
 		}),

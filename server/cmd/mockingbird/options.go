@@ -29,6 +29,7 @@ type Options struct {
 	// Web
 	FaviconDir  string
 	TemplateDir string
+	AssetDir    string
 
 	Log      mockingbird.Log
 	ErrorLog *log.Logger

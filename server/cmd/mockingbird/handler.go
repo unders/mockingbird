@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/unders/mockingbird/server/domain/mockingbird"
 
@@ -13,19 +14,33 @@ import (
 )
 
 type handler struct {
-	Favicon func(r *http.Request) (http.Handler, bool)
-	HTML    mockingbird.HTMLAdapter
-	Log     mockingbird.Log
+	Favicon      func(r *http.Request) (http.Handler, bool)
+	Assets       http.FileSystem
+	AssetsPrefix string
+	HTML         mockingbird.HTMLAdapter
+	Log          mockingbird.Log
 }
 
 func createHandler(h handler) http.Handler {
 	router := rest.Router{Namespaces: []string{"v1"}}
+
+	assets := "/public/"
+	if h.AssetsPrefix != "" {
+		assets = h.AssetsPrefix
+	}
+
+	fs := http.StripPrefix(assets, http.FileServer(h.Assets))
 
 	f := func(w http.ResponseWriter, req *http.Request) {
 		if h.isJSON(req) {
 			h.jsonNotImplemented(w, req)
 			return
 		}
+		if strings.HasPrefix(req.URL.Path, assets) {
+			fs.ServeHTTP(w, req)
+			return
+		}
+
 		//
 		// All other Content-Type's are treated as HTML.
 		//
@@ -56,6 +71,7 @@ func createHandler(h handler) http.Handler {
 				favicon.ServeHTTP(w, req)
 				return
 			}
+
 			err := errors.New("route not found")
 			h.write(w, req, http.StatusNotFound, h.HTML.ErrorNotFound(), err)
 		}

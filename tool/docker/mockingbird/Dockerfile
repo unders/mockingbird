@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
    && apt-get install git -y \
    && apt-get install wget -y \
    && apt-get install unzip -y \
+   && apt-get install gcc -y \
    && wget https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz \
    && tar -xvf go1.11.4.linux-amd64.tar.gz \
    && rm go1.11.4.linux-amd64.tar.gz \

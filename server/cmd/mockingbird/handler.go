@@ -22,7 +22,7 @@ type handler struct {
 }
 
 func createHandler(h handler) http.Handler {
-	router := rest.Router{Namespaces: []string{"v1"}}
+	router := rest.Router{}
 
 	assets := "/public/"
 	if h.AssetsPrefix != "" {
@@ -52,18 +52,22 @@ func createHandler(h handler) http.Handler {
 		}
 
 		switch route {
+		//
 		// GET
+		//
 		case rest.Route{Method: http.MethodGet, Path: ""}:
-			url := "/v1/dashboard"
+			url := "/dashboard"
 			http.Redirect(w, req, url, http.StatusSeeOther)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/dashboard"}:
+		case rest.Route{Method: http.MethodGet, Path: "/dashboard"}:
 			h.showDashboard(w, req)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/tests"}:
+		case rest.Route{Method: http.MethodGet, Path: "/tests"}:
 			h.listTests(w, req)
-		case rest.Route{Method: http.MethodGet, Path: "/v1/tests/*"}:
+		case rest.Route{Method: http.MethodGet, Path: "/tests/*"}:
 			h.showTest(w, req, path)
-		// POST
-		case rest.Route{Method: http.MethodPost, Path: "/v1/tests"}:
+			//
+			// POST
+			//
+		case rest.Route{Method: http.MethodPost, Path: "/tests"}:
 			h.runTest(w, req)
 		default:
 			if favicon, found := h.Favicon(req); found {
@@ -83,6 +87,8 @@ func createHandler(h handler) http.Handler {
 //
 // HTML Handlers
 //
+
+//
 func (h *handler) showDashboard(w http.ResponseWriter, req *http.Request) {
 	code, b, err := h.HTML.Dashboard()
 	h.write(w, req, code, b, err)
@@ -94,7 +100,7 @@ func (h *handler) listTests(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) showTest(w http.ResponseWriter, req *http.Request, path rest.Path) {
-	id := path.String(2, "")
+	id := path.String(1, "")
 	code, b, err := h.HTML.ShowTest(mockingbird.ULID(id))
 	h.write(w, req, code, b, err)
 }
@@ -107,7 +113,7 @@ func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(w, req, fmt.Sprintf("/v1/tests/%s", id), http.StatusSeeOther)
+	http.Redirect(w, req, fmt.Sprintf("/tests/%s", id), http.StatusSeeOther)
 }
 
 //
@@ -117,14 +123,14 @@ func (h *handler) runTest(w http.ResponseWriter, req *http.Request) {
 func (h *handler) write(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
 	body := bytes.NewReader(buf)
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err != nil {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 	}
 
 	w.WriteHeader(code)
 	if _, err := io.Copy(w, body); err != nil {
-		err = errors.Wrapf(err, "io.Copy(w, body) failed")
+		err = errors.Wrap(err, "io.Copy(w, body) failed")
 		h.logResponseFailure(req, code, err)
 		return
 	}
@@ -158,8 +164,8 @@ func (h *handler) jsonNotImplemented(w http.ResponseWriter, req *http.Request) {
 func (h *handler) writeJSON(w http.ResponseWriter, req *http.Request, code int, buf []byte, err error) {
 	body := bytes.NewReader(buf)
 
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 	}
 

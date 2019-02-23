@@ -21,16 +21,16 @@ import (
 
 func TestAPI(t *testing.T) {
 	// TODO: Add test for favicons
-	t.Run("GET  /  When Content-Type=application/json ReturnsError", getRootAsJSON)
-	t.Run("GET  /  RedirectsTo  /v1/dashboard", rootPathRedirectsToDashboard)
-	t.Run("GET  /v1/dashboard  ReturnsDashboardPage", getDashboard)
-	t.Run("POST  /v1/dashboard  ReturnsErrorRouteNotFound", postDashboard)
+	t.Run("GET  /    When Content-Type=application/json    ReturnsError", getRootAsJSON)
+	t.Run("GET  /    RedirectsTo  /dashboard", rootPathRedirectsToDashboard)
+	t.Run("GET  /dashboard    ReturnsDashboardPage", getDashboard)
+	t.Run("POST  /dashboard    ReturnsErrorRouteNotFound", postDashboard)
 
-	t.Run("POST  /v1/tests  StartsATestSuite  Redirects", postTests)
-	t.Run("POST  /v1/tests  WhenServerError  ReturnsError", postTestsWhenServerError)
+	t.Run("POST  /tests    StartsATestSuite    Redirects", postTests)
+	t.Run("POST  /tests    WhenServerError    ReturnsError", postTestsWhenServerError)
 
-	t.Run("GET  /v1/tests/{id} ReturnsTestResultPage", getTest)
-	t.Run("GET  /v1/tests/ ReturnsTestResultListPage", getTestResults)
+	t.Run("GET  /tests/{id}    ReturnsTestResultPage", getTest)
+	t.Run("GET  /tests/    ReturnsTestResultListPage", getTestResults)
 }
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
@@ -104,13 +104,13 @@ func rootPathRedirectsToDashboard(t *testing.T) {
 			URL:            ts.URL,
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("redirects to dashboard page"),
-			wantRequestURL: "/v1/dashboard",
+			wantRequestURL: "/dashboard",
 		},
 		{
 			URL:            ts.URL + "/",
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("redirects to dashboard page"),
-			wantRequestURL: "/v1/dashboard",
+			wantRequestURL: "/dashboard",
 		},
 	}
 
@@ -149,10 +149,10 @@ func getDashboard(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/dashboard",
+			URL:            ts.URL + "/dashboard",
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("dashboard page"),
-			wantRequestURL: "/v1/dashboard",
+			wantRequestURL: "/dashboard",
 		},
 	}
 
@@ -191,10 +191,10 @@ func postDashboard(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/dashboard",
+			URL:            ts.URL + "/dashboard",
 			wantCode:       http.StatusNotFound,
 			wantBody:       []byte("Error: Not Found"),
-			wantRequestURL: "/v1/dashboard",
+			wantRequestURL: "/dashboard",
 		},
 	}
 
@@ -238,20 +238,20 @@ func postTests(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/tests?test_suite=test:all",
+			URL:            ts.URL + "/tests?test_suite=test:all",
 			contentType:    "text/html",
 			body:           strings.NewReader("body"),
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("Redirects to test result page for id=test-suite-id"),
-			wantRequestURL: "/v1/tests/test-suite-id",
+			wantRequestURL: "/tests/test-suite-id",
 		},
 		{
-			URL:            ts.URL + "/v1/tests",
+			URL:            ts.URL + "/tests",
 			contentType:    "application/x-www-form-urlencoded",
 			body:           strings.NewReader(testSuiteForm.Encode()),
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("Redirects to test result page for id=test-suite-id"),
-			wantRequestURL: "/v1/tests/test-suite-id",
+			wantRequestURL: "/tests/test-suite-id",
 		},
 	}
 
@@ -291,10 +291,10 @@ func postTestsWhenServerError(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/tests/?test_suite=xxx",
+			URL:            ts.URL + "/tests/?test_suite=xxx",
 			wantCode:       http.StatusInternalServerError,
 			wantBody:       []byte("Body: with runTest error"),
-			wantRequestURL: "/v1/tests/?test_suite=xxx",
+			wantRequestURL: "/tests/?test_suite=xxx",
 		},
 	}
 
@@ -333,10 +333,10 @@ func getTest(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/tests/an-test-suite-id",
+			URL:            ts.URL + "/tests/an-test-suite-id",
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("body: test result page for id=an-test-suite-id"),
-			wantRequestURL: "/v1/tests/an-test-suite-id",
+			wantRequestURL: "/tests/an-test-suite-id",
 		},
 	}
 
@@ -375,16 +375,16 @@ func getTestResults(t *testing.T) {
 		wantRequestURL string
 	}{
 		{
-			URL:            ts.URL + "/v1/tests",
+			URL:            ts.URL + "/tests",
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("body: list test result page"),
-			wantRequestURL: "/v1/tests",
+			wantRequestURL: "/tests",
 		},
 		{
-			URL:            ts.URL + "/v1/tests/",
+			URL:            ts.URL + "/tests/",
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("body: list test result page"),
-			wantRequestURL: "/v1/tests/",
+			wantRequestURL: "/tests/",
 		},
 	}
 

@@ -33,10 +33,10 @@ type Path struct {
 }
 
 var path = Path{
-	Dashboard:      "/v1/dashboard",
-	ListTests:      "/v1/tests/",
-	showTest:       "/v1/tests/%s",
-	ListTestSuites: "/v1/tests/-/suites/",
+	Dashboard:      "/dashboard",
+	ListTests:      "/tests/",
+	showTest:       "/tests/%s",
+	ListTestSuites: "/tests/-/suites/",
 }
 
 // ShowTest returns path to show test page

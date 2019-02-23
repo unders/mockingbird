@@ -13,12 +13,12 @@
                     {{- template "part/state-icon" .State }}
                 </div>
                 <div class="stats-row">
-                    <span class="table-small-first">Test Time</span>
-                    <span>{{.Result.RunTime}}</span>
-                </div>
-                <div class="stats-row">
                     <span class="table-small-first">Started</span>
                     <span>{{.ResultStartTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Duration</span>
+                    <span>{{.Result.RunTime}}</span>
                 </div>
             </div>
         </div>

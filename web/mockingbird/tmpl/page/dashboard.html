@@ -1,20 +1,20 @@
 {{- define "content" }}
-        <div class="stats">
+    <div class="stats">
 
-            <div class="stats-card">
-                <h2 class="stats-title">
-                    Latest test suite
-                </h2>
-                <div class="stats-table table-small">
-                    <div class="stats-row">
-                        <span class="table-small-first">Suite</span>
-                        <span>
+        <div class="stats-card">
+            <h2 class="stats-title">
+                Latest test suite
+            </h2>
+            <div class="stats-table table-small">
+                <div class="stats-row">
+                    <span class="table-small-first">Suite</span>
+                    <span>
                             <a href="{{.LatestTestSuitePath}}">{{.Stats.LatestDoneTestSuiteName}}</a>
                         </span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-small-first">State</span>
-                        <span class="parent-state-bool">
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">State</span>
+                    <span class="parent-state-bool">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              class="state-bool"
                              viewBox="0 0 24 24">
@@ -24,27 +24,27 @@
                         </svg>
                         {{.Stats.LatestDoneTestSuiteState}}
                     </span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-small-first">Test time</span>
-                        <span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Test time</span>
+                    <span>
                         {{.Stats.LatestDoneTestSuiteRunTime}}
                     </span>
-                    </div>
                 </div>
             </div>
-            <div class="stats-card">
-                <h2 class="stats-title">Latest full test suite</h2>
-                <div class="stats-table table-small">
-                    <div class="stats-row">
-                        <span class="table-small-first">Suite</span>
-                        <span >
+        </div>
+        <div class="stats-card">
+            <h2 class="stats-title">Latest full test suite</h2>
+            <div class="stats-table table-small">
+                <div class="stats-row">
+                    <span class="table-small-first">Suite</span>
+                    <span >
                             <a href="{{.LatestFullTestSuitePath}}">{{.Stats.LatestDoneFullTestSuiteName}}</a>
                         </span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-small-first">State</span>
-                        <span class="parent-state-bool">
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">State</span>
+                    <span class="parent-state-bool">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              class="state-bool"
                              viewBox="0 0 24 24">
@@ -54,54 +54,53 @@
                         </svg>
                         {{.Stats.LatestDoneFullTestSuiteState}}
                     </span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-small-first">Test time</span>
-                        <span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Test time</span>
+                    <span>
                         {{.Stats.LatestDoneFullTestSuiteRunTime}}
                     </span>
-                    </div>
-                </div>
-            </div>
-            <div class="stats-card">
-                <h2 class="stats-title">Stats</h2>
-                <div class="stats-table table-large">
-                    <div class="stats-row">
-                        <span class="table-large-first">test:all success rate</span>
-                        <span>{{.Stats.FullTestSuiteSuccessRate}}%</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">Total success rate</span>
-                        <span>{{.Stats.TestSuiteSuccessRate}}%</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">Average test time</span>
-                        <span>{{.Stats.AverageTestSuiteRunTime}}</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">Slowest test time</span>
-                        <span>{{.Stats.SlowestTestSuiteRunTime}}</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">Slowest test suite</span>
-                        <span>{{.Stats.SlowestTestSuiteName}}</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">Average queue time</span>
-                        <span>{{.Stats.AverageTestSuiteQueueTime}}</span>
-                    </div>
-
-                    <div class="stats-row">
-                        <span class="table-large-first">Total test runs</span>
-                        <span>{{.Stats.TestSuiteRunCounter}}</span>
-                    </div>
-                    <div class="stats-row">
-                        <span class="table-large-first">test:all runs</span>
-                        <span>{{.Stats.FullTestSuiteRunCounter}}</span>
-                    </div>
                 </div>
             </div>
         </div>
+        <div class="stats-card">
+            <h2 class="stats-title">Stats</h2>
+            <div class="stats-table table-large">
+                <div class="stats-row">
+                    <span class="table-large-first">test:all success rate</span>
+                    <span>{{.Stats.FullTestSuiteSuccessRate}}%</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Total success rate</span>
+                    <span>{{.Stats.TestSuiteSuccessRate}}%</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Average test time</span>
+                    <span>{{.Stats.AverageTestSuiteRunTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Slowest test time</span>
+                    <span>{{.Stats.SlowestTestSuiteRunTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Slowest test suite</span>
+                    <span>{{.Stats.SlowestTestSuiteName}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">Average queue time</span>
+                    <span>{{.Stats.AverageTestSuiteQueueTime}}</span>
+                </div>
 
+                <div class="stats-row">
+                    <span class="table-large-first">Total test runs</span>
+                    <span>{{.Stats.TestSuiteRunCounter}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-large-first">test:all runs</span>
+                    <span>{{.Stats.FullTestSuiteRunCounter}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 {{- end -}}
 

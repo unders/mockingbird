@@ -64,6 +64,8 @@ func createHandler(h handler) http.Handler {
 			h.listTests(w, req)
 		case rest.Route{Method: http.MethodGet, Path: "/tests/*"}:
 			h.showTest(w, req, path)
+		case rest.Route{Method: http.MethodGet, Path: "/tests/*/suites"}:
+			h.showTestSuites(w, req, path)
 			//
 			// POST
 			//
@@ -102,6 +104,11 @@ func (h *handler) listTests(w http.ResponseWriter, req *http.Request) {
 func (h *handler) showTest(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	id := path.String(1, "")
 	code, b, err := h.HTML.ShowTest(mockingbird.ULID(id))
+	h.write(w, req, code, b, err)
+}
+
+func (h *handler) showTestSuites(w http.ResponseWriter, req *http.Request, path rest.Path) {
+	code, b, err := h.HTML.ShowTestSuites()
 	h.write(w, req, code, b, err)
 }
 

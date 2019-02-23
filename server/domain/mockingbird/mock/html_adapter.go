@@ -43,6 +43,12 @@ func (a HTMLAdapter) ListTests(pageToken string) (code int, body []byte, err err
 }
 
 // ShowTest returns the test result page
+func (a HTMLAdapter) ShowTestSuites() (code int, body []byte, err error) {
+	b := append(a.Body, "test suites page"...)
+	return a.Code, b, a.Err
+}
+
+// ShowTest returns the test result page
 func (a HTMLAdapter) ShowTest(id mockingbird.ULID) (code int, body []byte, err error) {
 	if a.IDErr != nil {
 		b := append(a.Body, "HasIdError for "...)

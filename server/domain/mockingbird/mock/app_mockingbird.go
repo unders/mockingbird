@@ -74,7 +74,6 @@ func (m *AppMockingbird) Dashboard() (mockingbird.Dashboard, error) {
 			SlowestTestSuiteRunTime: 255 * time.Second,
 			SlowestTestSuiteName:    TestAll,
 		},
-		TestSuites: testSuites,
 	}
 	return d, nil
 }
@@ -98,6 +97,11 @@ func (m *AppMockingbird) ShowTest(id mockingbird.ULID) (mockingbird.TestResult, 
 
 	msg := fmt.Sprintf("test run %s not found", id)
 	return mockingbird.TestResult{}, errs.NotFound(msg)
+}
+
+// ShowTestSuite returns the test suites
+func (m *AppMockingbird) ShowTestSuites() []mockingbird.TestSuite {
+	return testSuites
 }
 
 //

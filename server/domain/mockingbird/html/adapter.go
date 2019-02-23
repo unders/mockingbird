@@ -44,7 +44,7 @@ func (a Adapter) Dashboard() (code int, body []byte, err error) {
 	return 200, b, nil
 }
 
-// ListTestResults returns the ListTestResults page
+// ListTest returns the ListTest page
 func (a Adapter) ListTests(pageToken string) (code int, body []byte, err error) {
 	tests, err := a.App.ListTests(pageToken)
 	if err != nil {
@@ -58,7 +58,7 @@ func (a Adapter) ListTests(pageToken string) (code int, body []byte, err error) 
 	return 200, b, nil
 }
 
-// ShowTestResult returns the ShowTestResult page
+// ShowTest returns the ShowTest page
 func (a Adapter) ShowTest(id mockingbird.ULID) (code int, body []byte, err error) {
 	test, err := a.App.ShowTest(id)
 	if errs.IsNotFound(err) {
@@ -68,6 +68,17 @@ func (a Adapter) ShowTest(id mockingbird.ULID) (code int, body []byte, err error
 		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
 	}
 	b, err := a.Tmpl.ShowTest(test)
+	if err != nil {
+		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
+	}
+
+	return 200, b, nil
+}
+
+// ShowTestSuites returns the ShowTestSuites page
+func (a Adapter) ShowTestSuites() (code int, body []byte, err error) {
+	ts := a.App.ShowTestSuites()
+	b, err := a.Tmpl.ShowTestSuites(ts)
 	if err != nil {
 		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
 	}

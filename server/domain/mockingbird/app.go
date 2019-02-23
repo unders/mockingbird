@@ -23,8 +23,7 @@ const (
 
 // Dashboard shows the cumulative test suite state and possible test suites to run
 type Dashboard struct {
-	Stats      Stats
-	TestSuites []TestSuite
+	Stats Stats
 }
 
 // Stats shows the cumulative stats for the test suites
@@ -80,6 +79,7 @@ type App interface {
 	Dashboard() (Dashboard, error)
 	ListTests(pageToken string) (*TestResults, error)
 	ShowTest(id ULID) (TestResult, error)
+	ShowTestSuites() []TestSuite
 
 	//
 	// Executes given test suite

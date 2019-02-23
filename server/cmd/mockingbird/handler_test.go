@@ -31,6 +31,7 @@ func TestAPI(t *testing.T) {
 
 	t.Run("GET  /tests/{id}    ReturnsTestResultPage", getTest)
 	t.Run("GET  /tests/    ReturnsTestResultListPage", getTestResults)
+	t.Run("GET  /tests/-/suites    ReturnsTestSuitesPage", getTestSuites)
 }
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
@@ -385,6 +386,54 @@ func getTestResults(t *testing.T) {
 			wantCode:       http.StatusOK,
 			wantBody:       []byte("body: list test result page"),
 			wantRequestURL: "/tests/",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			resp, err := http.Get(tc.URL)
+			testdata.AssertNil(t, err)
+			defer func() { testdata.AssertNil(t, resp.Body.Close()) }()
+
+			if tc.wantCode != resp.StatusCode {
+				t.Errorf("\nWant: %d\n Got: %d", tc.wantCode, resp.StatusCode)
+			}
+
+			b, err := ioutil.ReadAll(resp.Body)
+			testdata.AssertNil(t, err)
+			if !reflect.DeepEqual(tc.wantBody, b) {
+				t.Errorf("\nWant: %s\n Got: %s\n", string(tc.wantBody), string(b))
+			}
+
+			got := resp.Request.URL.RequestURI()
+			if tc.wantRequestURL != got {
+				t.Errorf("\nWant: %s\n Got: %s\n", tc.wantRequestURL, got)
+			}
+		})
+	}
+}
+
+func getTestSuites(t *testing.T) {
+	ts := testServer(mock.HTMLAdapter{Code: http.StatusOK, Body: []byte("body: ")})
+	defer ts.Close()
+
+	testCases := []struct {
+		URL            string
+		wantCode       int
+		wantBody       []byte
+		wantRequestURL string
+	}{
+		{
+			URL:            ts.URL + "/tests/-/suites",
+			wantCode:       http.StatusOK,
+			wantBody:       []byte("body: test suites page"),
+			wantRequestURL: "/tests/-/suites",
+		},
+		{
+			URL:            ts.URL + "/tests/-/suites/",
+			wantCode:       http.StatusOK,
+			wantBody:       []byte("body: test suites page"),
+			wantRequestURL: "/tests/-/suites/",
 		},
 	}
 

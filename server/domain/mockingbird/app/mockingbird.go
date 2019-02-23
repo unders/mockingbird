@@ -36,6 +36,11 @@ func (m *Mockingbird) ShowTest(id mockingbird.ULID) (mockingbird.TestResult, err
 	return mockingbird.TestResult{}, nil
 }
 
+// ShowTestSuites returns the test suites
+func (m *Mockingbird) ShowTestSuites() []mockingbird.TestSuite {
+	return []mockingbird.TestSuite{}
+}
+
 //
 // Executes a test suite
 //

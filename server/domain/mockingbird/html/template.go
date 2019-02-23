@@ -99,6 +99,11 @@ func (t *Template) ShowTest(r mockingbird.TestResult) ([]byte, error) {
 	return []byte(fmt.Sprintf("Test result  page: %+v", r)), nil
 }
 
+// ShowTestSuites returns test  suite page
+func (t *Template) ShowTestSuites(ts []mockingbird.TestSuite) ([]byte, error) {
+	return []byte(fmt.Sprintf("Test suites page: %+v", ts)), nil
+}
+
 //
 // Client Errors
 //

@@ -171,8 +171,19 @@ body {
     Page Content - Test result page
 */
 
+.logs {
+    padding: 20px;
+}
+
+
+.logs-title {
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: #585858;
+}
+
 /*
-    Page Content - Test Suites
+    Page Content - Test suites
 */
 
 /*

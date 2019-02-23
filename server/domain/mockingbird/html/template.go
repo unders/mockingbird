@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -56,24 +57,33 @@ func (p Path) ShowTest(id string) string {
 
 // dashboardPage contains all required data for rendering dashboard page
 type dashboardPage struct {
-	CSS                     string
-	Title                   string
-	PageTitle               string
+	CSS   string
+	Title string
+
+	PageTitle string
+
+	FullTestSuiteState state
+	TestSuiteState     state
+
 	ReloadPath              string
 	LatestTestSuitePath     string
 	LatestFullTestSuitePath string
-	Path                    *Path
+
+	Path *Path
 	mockingbird.Dashboard
 }
 
 // testResultPage contains all required data for rendering test result page
 type testResultPage struct {
-	CSS        string
-	Title      string
-	PageTitle  string
-	ReloadPath string
-	Path       *Path
-	mockingbird.TestResult
+	CSS             string
+	Title           string
+	State           state
+	PageTitle       string
+	ReloadPath      string
+	Path            *Path
+	Result          mockingbird.TestResult
+	ResultLog       string
+	ResultStartTime string
 }
 
 // NewReloadableTemplate returns html.Template
@@ -106,6 +116,7 @@ type Template struct {
 // Dashboard returns the dashboard page as HTML
 func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 	const title = "Dashboard - Mockingbird"
+
 	page := dashboardPage{
 		Title: title,
 		CSS:   cssFile,
@@ -116,6 +127,8 @@ func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 		ReloadPath:              path.Dashboard,
 		LatestTestSuitePath:     path.ShowTest(string(d.Stats.LatestDoneTestSuiteID)),
 		LatestFullTestSuitePath: path.ShowTest(string(d.Stats.LatestDoneFullTestSuiteID)),
+		FullTestSuiteState:      state{state: d.Stats.LatestDoneFullTestSuiteState},
+		TestSuiteState:          state{state: d.Stats.LatestDoneTestSuiteState},
 
 		Dashboard: d,
 	}
@@ -130,14 +143,18 @@ func (t *Template) ListTest(r *mockingbird.TestResults) ([]byte, error) {
 // ShowTest returns test result page
 func (t *Template) ShowTest(ts mockingbird.TestResult) ([]byte, error) {
 	const title = "Test result - Mockingbird"
+
 	page := testResultPage{
 		Title: title,
 		CSS:   cssFile,
 
-		ReloadPath: path.ShowTest(string(ts.ID)),
-		PageTitle:  fmt.Sprintf("%s", ts.TestSuite),
-		Path:       &path,
-		TestResult: ts,
+		State:           state{state: ts.State},
+		ReloadPath:      path.ShowTest(string(ts.ID)),
+		PageTitle:       fmt.Sprintf("%s", ts.TestSuite),
+		Path:            &path,
+		Result:          ts,
+		ResultLog:       string(ts.Log),
+		ResultStartTime: ts.StartTime.Format(time.RFC3339),
 	}
 	return t.tmpl.Execute(mainLayout, testResult, page)
 }
@@ -168,4 +185,19 @@ func (t *Template) InvalidURL() []byte {
 // InternalError returns Internal Error Page
 func (t *Template) InternalError() []byte {
 	return []byte("Internal Error Page")
+}
+
+type state struct {
+	state mockingbird.State
+}
+
+func (s state) IsPending() bool {
+	return s.state == mockingbird.PENDING
+}
+func (s state) IsSuccessful() bool {
+	return s.state == mockingbird.SUCCESSFUL
+}
+
+func (s state) IsFailed() bool {
+	return s.state == mockingbird.FAILED
 }

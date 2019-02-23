@@ -1,4 +1,30 @@
 {{- define "content" }}
-    <h1>This is content on the tests/show page </h1>
+    <div class="stats">
+        <div class="stats-card">
+            <h2 class="stats-title">
+                Test information
+            </h2>
+            <div class="stats-table table-small">
+                <div class="stats-row">
+                    <span class="table-small-first">Suite</span>
+                    <span>{{.Result.TestSuite}}</span>
+                </div>
+                <div class="stats-row">
+                    {{- template "part/state-icon" .State }}
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Test Time</span>
+                    <span>{{.Result.RunTime}}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="table-small-first">Started</span>
+                    <span>{{.ResultStartTime}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="logs">
+        <h2 class="logs-title">Logs</h2>
+        <pre>{{.ResultLog}}</pre>
+    </div>
 {{- end}}
-

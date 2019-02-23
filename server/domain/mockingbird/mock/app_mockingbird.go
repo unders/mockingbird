@@ -20,9 +20,9 @@ const (
 
 // test suites
 const (
-	TestAll          mockingbird.TestSuite = "test:all"
-	TestNavigation                         = "test:navigation"
-	TestRegistration                       = "test:registration"
+	TestAll          mockingbird.TestSuite = "all:test"
+	TestNavigation                         = "navigation:test"
+	TestRegistration                       = "registration:test"
 )
 
 // test suite list
@@ -56,9 +56,13 @@ var _ mockingbird.App = &AppMockingbird{}
 func (m *AppMockingbird) Dashboard() (mockingbird.Dashboard, error) {
 	d := mockingbird.Dashboard{
 		Stats: mockingbird.Stats{
-			LatestDoneTestSuiteState:   mockingbird.SUCCESSFUL,
-			LatestDoneTestSuiteRunTime: 66 * time.Second,
+			LatestDoneFullTestSuiteID:   ULID3,
+			LatestDoneFullTestSuiteName: TestAll,
+			LatestDoneTestSuiteState:    mockingbird.SUCCESSFUL,
+			LatestDoneTestSuiteRunTime:  66 * time.Second,
 
+			LatestDoneTestSuiteID:          ULID1,
+			LatestDoneTestSuiteName:        TestRegistration,
 			LatestDoneFullTestSuiteState:   mockingbird.FAILED,
 			LatestDoneFullTestSuiteRunTime: 150 * time.Second,
 

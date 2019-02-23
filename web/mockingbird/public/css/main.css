@@ -123,11 +123,9 @@ body {
 .stats-row:nth-child(odd) {
     background: #FAFAFA;
 }
-
 .stats-row span:nth-child(even) {
-    text-transform: capitalize;
+    text-transform: lowercase;
 }
-
 .stats-row span:nth-child(odd) {
     display: inline-block;
     font-weight: 500;

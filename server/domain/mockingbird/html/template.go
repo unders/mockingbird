@@ -17,7 +17,8 @@ const (
 
 // Page file names
 const (
-	dashboard string = "dashboard.html"
+	dashboard  = "dashboard.html"
+	testResult = "tests/show.html"
 )
 
 // Assets files
@@ -55,12 +56,24 @@ func (p Path) ShowTest(id string) string {
 
 // dashboardPage contains all required data for rendering dashboard page
 type dashboardPage struct {
+	CSS                     string
+	Title                   string
+	PageTitle               string
+	ReloadPath              string
+	LatestTestSuitePath     string
+	LatestFullTestSuitePath string
+	Path                    *Path
+	mockingbird.Dashboard
+}
+
+// testResultPage contains all required data for rendering test result page
+type testResultPage struct {
 	CSS        string
 	Title      string
 	PageTitle  string
 	ReloadPath string
 	Path       *Path
-	mockingbird.Dashboard
+	mockingbird.TestResult
 }
 
 // NewReloadableTemplate returns html.Template
@@ -94,12 +107,17 @@ type Template struct {
 func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 	const title = "Dashboard - Mockingbird"
 	page := dashboardPage{
-		Title:      title,
-		ReloadPath: path.Dashboard,
-		PageTitle:  "Dashboard",
-		Dashboard:  d,
-		Path:       &path,
-		CSS:        cssFile,
+		Title: title,
+		CSS:   cssFile,
+
+		Path: &path,
+
+		PageTitle:               "Dashboard",
+		ReloadPath:              path.Dashboard,
+		LatestTestSuitePath:     path.ShowTest(string(d.Stats.LatestDoneTestSuiteID)),
+		LatestFullTestSuitePath: path.ShowTest(string(d.Stats.LatestDoneFullTestSuiteID)),
+
+		Dashboard: d,
 	}
 	return t.tmpl.Execute(mainLayout, dashboard, page)
 }
@@ -110,8 +128,18 @@ func (t *Template) ListTest(r *mockingbird.TestResults) ([]byte, error) {
 }
 
 // ShowTest returns test result page
-func (t *Template) ShowTest(r mockingbird.TestResult) ([]byte, error) {
-	return []byte(fmt.Sprintf("Test result  page: %+v", r)), nil
+func (t *Template) ShowTest(ts mockingbird.TestResult) ([]byte, error) {
+	const title = "Test result - Mockingbird"
+	page := testResultPage{
+		Title: title,
+		CSS:   cssFile,
+
+		ReloadPath: path.ShowTest(string(ts.ID)),
+		PageTitle:  fmt.Sprintf("%s", ts.TestSuite),
+		Path:       &path,
+		TestResult: ts,
+	}
+	return t.tmpl.Execute(mainLayout, testResult, page)
 }
 
 // ShowTestSuites returns test  suite page

@@ -1,5 +1,4 @@
 {{- define "content" }}
-   <div class="content">
         <div class="stats">
 
             <div class="stats-card">
@@ -7,6 +6,12 @@
                     Latest test suite
                 </h2>
                 <div class="stats-table table-small">
+                    <div class="stats-row">
+                        <span class="table-small-first">Suite</span>
+                        <span>
+                            <a href="{{.LatestTestSuitePath}}">{{.Stats.LatestDoneTestSuiteName}}</a>
+                        </span>
+                    </div>
                     <div class="stats-row">
                         <span class="table-small-first">State</span>
                         <span class="parent-state-bool">
@@ -29,8 +34,14 @@
                 </div>
             </div>
             <div class="stats-card">
-                <h2 class="stats-title">Latest test:all</h2>
+                <h2 class="stats-title">Latest full test suite</h2>
                 <div class="stats-table table-small">
+                    <div class="stats-row">
+                        <span class="table-small-first">Suite</span>
+                        <span >
+                            <a href="{{.LatestFullTestSuitePath}}">{{.Stats.LatestDoneFullTestSuiteName}}</a>
+                        </span>
+                    </div>
                     <div class="stats-row">
                         <span class="table-small-first">State</span>
                         <span class="parent-state-bool">
@@ -91,7 +102,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
 {{- end -}}
 

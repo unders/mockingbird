@@ -28,9 +28,13 @@ type Dashboard struct {
 
 // Stats shows the cumulative stats for the test suites
 type Stats struct {
+	LatestDoneTestSuiteID      ULID
+	LatestDoneTestSuiteName    TestSuite
 	LatestDoneTestSuiteState   State
 	LatestDoneTestSuiteRunTime time.Duration
 
+	LatestDoneFullTestSuiteID      ULID
+	LatestDoneFullTestSuiteName    TestSuite
 	LatestDoneFullTestSuiteState   State
 	LatestDoneFullTestSuiteRunTime time.Duration
 

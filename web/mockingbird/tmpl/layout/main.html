@@ -21,13 +21,13 @@
         {{- template "part/header" . }}
     {{- end}}
 
-    {{- template "part/page-title" . }}
+    <div class="content">
+        {{- template "part/page-title" . }}
 
-    {{- block "content" . }}
-
-        override me inside page file
-
-    {{- end }}
+        {{- block "content" . }}
+            override me inside page file
+        {{- end }}
+    </div>
 
     {{- template "part/footer" }}
 </body>

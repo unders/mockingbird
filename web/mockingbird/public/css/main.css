@@ -170,12 +170,7 @@ body {
 /*
     Page Content - Test result page
 */
-
-.logs {
-    padding: 20px;
-}
-
-
+.logs { padding: 20px; }
 .logs-title {
     font-weight: 300;
     font-size: 1.5rem;
@@ -185,6 +180,31 @@ body {
 /*
     Page Content - Test suites
 */
+.test-suites { padding: 20px; }
+.test-suites-list {
+    list-style-type: none;
+    padding: 0;
+    margin:0;
+    display:flex;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 20px;
+}
+button:hover {
+    background-color: #f1f1f1;
+}
+*:focus {
+    outline: none;
+}
+
+button:active {
+    border: none;
+}
+
 
 /*
     FOOTER

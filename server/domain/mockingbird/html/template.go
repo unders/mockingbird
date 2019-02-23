@@ -18,8 +18,9 @@ const (
 
 // Page file names
 const (
-	dashboard  = "dashboard.html"
-	testResult = "tests/show.html"
+	dashboard      = "dashboard.html"
+	testResult     = "tests/show.html"
+	testSuitesFile = "tests/suites.html"
 )
 
 // Assets files
@@ -35,6 +36,7 @@ const (
 type Path struct {
 	Dashboard      string
 	ListTests      string
+	RunTest        string
 	showTest       string
 	ListTestSuites string
 }
@@ -42,6 +44,7 @@ type Path struct {
 var path = Path{
 	Dashboard:      "/dashboard",
 	ListTests:      "/tests/",
+	RunTest:        "/tests/",
 	showTest:       "/tests/%s",
 	ListTestSuites: "/tests/-/suites/",
 }
@@ -84,6 +87,16 @@ type testResultPage struct {
 	Result          mockingbird.TestResult
 	ResultLog       string
 	ResultStartTime string
+}
+
+type testSuites struct {
+	CSS        string
+	Title      string
+	PageTitle  string
+	ReloadPath string
+	Path       *Path
+
+	TestSuites []mockingbird.TestSuite
 }
 
 // NewReloadableTemplate returns html.Template
@@ -161,7 +174,18 @@ func (t *Template) ShowTest(ts mockingbird.TestResult) ([]byte, error) {
 
 // ShowTestSuites returns test  suite page
 func (t *Template) ShowTestSuites(ts []mockingbird.TestSuite) ([]byte, error) {
-	return []byte(fmt.Sprintf("Test suites page: %+v", ts)), nil
+	const title = "Test suites - Mockingbird"
+
+	page := testSuites{
+		Title: title,
+		CSS:   cssFile,
+
+		ReloadPath: path.ListTestSuites,
+		PageTitle:  "Test Suites",
+		Path:       &path,
+		TestSuites: ts,
+	}
+	return t.tmpl.Execute(mainLayout, testSuitesFile, page)
 }
 
 //

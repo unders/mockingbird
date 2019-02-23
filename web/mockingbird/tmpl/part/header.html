@@ -1,0 +1,9 @@
+{{- define "part/header" -}}
+    <div class="header">
+        <ul class="header-nav">
+            <li><a class="header-link" href="{{.Path.Dashboard}}">Dashboard</a></li>
+            <li><a class="header-link" href="{{.Path.ListTests}}">Test history</a></li>
+            <li><a class="header-link" href="{{.Path.ListTestSuites}}">Test suites</a></li>
+        </ul>
+    </div>
+{{- end -}}

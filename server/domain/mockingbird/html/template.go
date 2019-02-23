@@ -20,6 +20,11 @@ const (
 	dashboard string = "dashboard.html"
 )
 
+// Assets files
+const (
+	cssFile = "/public/css/main.css"
+)
+
 //
 // Path
 //
@@ -50,8 +55,11 @@ func (p Path) ShowTest(id string) string {
 
 // dashboardPage contains all required data for rendering dashboard page
 type dashboardPage struct {
-	Title string
-	Path  *Path
+	CSS        string
+	Title      string
+	PageTitle  string
+	ReloadPath string
+	Path       *Path
 	mockingbird.Dashboard
 }
 
@@ -85,7 +93,14 @@ type Template struct {
 // Dashboard returns the dashboard page as HTML
 func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 	const title = "Dashboard - Mockingbird"
-	page := dashboardPage{Title: title, Dashboard: d, Path: &path}
+	page := dashboardPage{
+		Title:      title,
+		ReloadPath: path.Dashboard,
+		PageTitle:  "Dashboard",
+		Dashboard:  d,
+		Path:       &path,
+		CSS:        cssFile,
+	}
 	return t.tmpl.Execute(mainLayout, dashboard, page)
 }
 

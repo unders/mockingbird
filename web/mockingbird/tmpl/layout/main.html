@@ -1,5 +1,6 @@
 <!doctype html>
 <html class="no-js" lang="en">
+
 <head>
     <meta charset="utf-8">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -12,29 +13,23 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#e6cece">
     <title>{{block "title" .}} {{.Title}} {{end}}</title>
-
-    <style type="text/css">
-        .sans-serif {
-            font-family: -apple-system, BlinkMacSystemFont,
-            'avenir next', avenir,
-            helvetica, 'helvetica neue',
-            ubuntu,
-            roboto, noto,
-            'segoe ui', arial,
-            sans-serif;
-        }
-
-        body {
-            margin: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="{{.CSS}}">
 </head>
+
 <body class="sans-serif">
-{{- block "header" . }}
-    override me inside page file
-{{- end}}
-{{- block "content" . }}
-    override me inside page file
-{{- end }}
+    {{- block "header" . }}
+        {{- template "part/header" . }}
+    {{- end}}
+
+    {{- template "part/page-title" . }}
+
+    {{- block "content" . }}
+
+        override me inside page file
+
+    {{- end }}
+
+    {{- template "part/footer" }}
 </body>
+
 </html>

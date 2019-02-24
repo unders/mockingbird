@@ -6,10 +6,10 @@
         <table>
             <thead>
             <tr>
+                <th class="test-history-icon"></th>
                 <th>ID</th>
                 <th>Suite</th>
                 <th>Status</th>
-                <th>State</th>
                 <th>Started</th>
                 <th>Duration</th>
             </tr>
@@ -17,16 +17,19 @@
             <tbody>
             {{- range .TestResults -}}
                 <tr>
+                    <td class="test-history-icon">
+                        {{- template "part/state-list-icon" . }}
+                    </td>
                     <td><a href="{{.TestPath $path}}">{{.ShortID}}</a></td>
                     <td>{{.TestSuite}}</td>
                     <td>{{.Status}}</td>
-                    <td>{{.State}}</td>
                     <td>{{.Started}}</td>
                     <td>{{.RunTime}}</td>
                 </tr>
             {{- end -}}
             <tr class="table-no-border">
-                <td></td>
+                <td>
+                </td>
                 <td></td>
                 <td></td>
                 <td></td>

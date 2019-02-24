@@ -193,6 +193,19 @@ body {
     border-bottom: none;
 }
 
+.test-history > table > tbody > tr > td.test-history-icon {
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom:0;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    vertical-align: middle;
+}
+
+.test-history-icon > svg {
+    width: 30px; height: auto;
+    padding-left: 15px;
+}
+
 @media screen and (max-width: 1100px) {
     .test-history > table > thead > tr > th {
         padding-right: 3rem;

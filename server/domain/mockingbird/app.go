@@ -78,13 +78,20 @@ type TestResult struct {
 func (tr TestResult) TestPath(path string) string {
 	return fmt.Sprintf("%s%s", path, tr.ID)
 }
-
 func (tr TestResult) Started() string {
 	return tr.StartTime.Format(time.RFC822)
 }
-
 func (tr TestResult) ShortID() string {
 	return string(tr.ID)[0:10] + "..."
+}
+func (tr TestResult) IsPending() bool {
+	return tr.State == PENDING
+}
+func (tr TestResult) IsSuccessful() bool {
+	return tr.State == SUCCESSFUL
+}
+func (tr TestResult) IsFailed() bool {
+	return tr.State == FAILED
 }
 
 // App defines the interface for the mockingbird application

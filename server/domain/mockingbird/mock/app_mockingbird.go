@@ -164,8 +164,8 @@ func (m *AppMockingbird) listTests() *mockingbird.TestResults {
 			{
 				ID: ULID3,
 
-				Status:    mockingbird.QUEUED,
-				State:     mockingbird.PENDING,
+				Status:    mockingbird.DONE,
+				State:     mockingbird.FAILED,
 				TestSuite: TestAll,
 
 				Log:    testAllLogOutput,

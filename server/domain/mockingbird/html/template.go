@@ -66,8 +66,8 @@ type dashboardPage struct {
 
 	PageTitle string
 
-	FullTestSuiteState state
-	TestSuiteState     state
+	FullTestSuiteState mockingbird.TestResult
+	TestSuiteState     mockingbird.TestResult
 
 	ReloadPath              string
 	LatestTestSuitePath     string
@@ -81,7 +81,6 @@ type dashboardPage struct {
 type testResultPage struct {
 	CSS             string
 	Title           string
-	State           state
 	PageTitle       string
 	ReloadPath      string
 	Path            *Path
@@ -152,8 +151,8 @@ func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 		ReloadPath:              path.Dashboard,
 		LatestTestSuitePath:     path.ShowTest(string(d.Stats.LatestDoneTestSuiteID)),
 		LatestFullTestSuitePath: path.ShowTest(string(d.Stats.LatestDoneFullTestSuiteID)),
-		FullTestSuiteState:      state{state: d.Stats.LatestDoneFullTestSuiteState},
-		TestSuiteState:          state{state: d.Stats.LatestDoneTestSuiteState},
+		FullTestSuiteState:      mockingbird.TestResult{State: d.Stats.LatestDoneFullTestSuiteState},
+		TestSuiteState:          mockingbird.TestResult{State: d.Stats.LatestDoneTestSuiteState},
 
 		Dashboard: d,
 	}
@@ -186,7 +185,6 @@ func (t *Template) ShowTest(ts mockingbird.TestResult) ([]byte, error) {
 		Title: title,
 		CSS:   cssFile,
 
-		State:           state{state: ts.State},
 		ReloadPath:      path.ShowTest(string(ts.ID)),
 		PageTitle:       fmt.Sprintf("%s", ts.TestSuite),
 		Path:            &path,
@@ -234,23 +232,4 @@ func (t *Template) InvalidURL() []byte {
 // InternalError returns Internal Error Page
 func (t *Template) InternalError() []byte {
 	return []byte("Internal Error Page")
-}
-
-//
-// state
-//
-
-type state struct {
-	state mockingbird.State
-}
-
-func (s state) IsPending() bool {
-	return s.state == mockingbird.PENDING
-}
-func (s state) IsSuccessful() bool {
-	return s.state == mockingbird.SUCCESSFUL
-}
-
-func (s state) IsFailed() bool {
-	return s.state == mockingbird.FAILED
 }

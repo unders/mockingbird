@@ -18,9 +18,10 @@ const (
 
 // Page file names
 const (
-	dashboard      = "dashboard.html"
-	testResult     = "tests/show.html"
-	testSuitesFile = "tests/suites.html"
+	dashboard       = "dashboard.html"
+	testResult      = "tests/show.html"
+	testResultsFile = "tests/index.html"
+	testSuitesFile  = "tests/suites.html"
 )
 
 // Assets files
@@ -99,6 +100,17 @@ type testSuites struct {
 	TestSuites []mockingbird.TestSuite
 }
 
+type testResultsPage struct {
+	CSS        string
+	Title      string
+	PageTitle  string
+	ReloadPath string
+	Path       *Path
+
+	NextPage    string
+	TestResults []mockingbird.TestResult
+}
+
 // NewReloadableTemplate returns html.Template
 func NewReloadableTemplate(templateDir string) (*Template, error) {
 	tmpl, err := html.NewReloadableTemplate(templateDir)
@@ -149,8 +161,21 @@ func (t *Template) Dashboard(d mockingbird.Dashboard) ([]byte, error) {
 }
 
 // ListTests returns test results page
-func (t *Template) ListTest(r *mockingbird.TestResults) ([]byte, error) {
-	return []byte(fmt.Sprintf("Test results  page: %+v", r)), nil
+func (t *Template) ListTest(ts *mockingbird.TestResults) ([]byte, error) {
+	const title = "Test history - Mockingbird"
+
+	page := testResultsPage{
+		Title: title,
+		CSS:   cssFile,
+
+		ReloadPath: path.ListTests,
+		PageTitle:  "Test History",
+		Path:       &path,
+
+		NextPage:    fmt.Sprintf("%s?page_token=%s", path.ListTests, ts.NextPageToken),
+		TestResults: ts.TestResults,
+	}
+	return t.tmpl.Execute(mainLayout, testResultsFile, page)
 }
 
 // ShowTest returns test result page
@@ -210,6 +235,10 @@ func (t *Template) InvalidURL() []byte {
 func (t *Template) InternalError() []byte {
 	return []byte("Internal Error Page")
 }
+
+//
+// state
+//
 
 type state struct {
 	state mockingbird.State

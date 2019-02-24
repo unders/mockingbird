@@ -1,6 +1,9 @@
 package mockingbird
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type ULID string
 type TestSuite string
@@ -53,8 +56,8 @@ type Stats struct {
 
 // TestResults contains a list of test results
 type TestResults struct {
-	NexPageToken string
-	TestResults  []TestResult
+	NextPageToken string
+	TestResults   []TestResult
 }
 
 // TestResult contains the test result for a specific test suite
@@ -70,6 +73,18 @@ type TestResult struct {
 
 	StartTime time.Time
 	RunTime   time.Duration
+}
+
+func (tr TestResult) TestPath(path string) string {
+	return fmt.Sprintf("%s%s", path, tr.ID)
+}
+
+func (tr TestResult) Started() string {
+	return tr.StartTime.Format(time.RFC822)
+}
+
+func (tr TestResult) ShortID() string {
+	return string(tr.ID)[0:10] + "..."
 }
 
 // App defines the interface for the mockingbird application

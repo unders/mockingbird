@@ -50,6 +50,7 @@ func (a Adapter) ListTests(pageToken string) (code int, body []byte, err error) 
 	if err != nil {
 		return http.StatusInternalServerError, a.Tmpl.InternalError(), err
 	}
+
 	b, err := a.Tmpl.ListTest(tests)
 	if err != nil {
 		return http.StatusInternalServerError, a.Tmpl.InternalError(), err

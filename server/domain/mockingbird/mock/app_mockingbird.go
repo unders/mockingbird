@@ -133,7 +133,7 @@ func (m *AppMockingbird) RunTest(s mockingbird.TestSuite) (mockingbird.ULID, err
 
 func (m *AppMockingbird) listTests() *mockingbird.TestResults {
 	return &mockingbird.TestResults{
-		NexPageToken: string(ULID1),
+		NextPageToken: string(ULID1),
 		TestResults: []mockingbird.TestResult{
 			{
 				ID: ULID1,

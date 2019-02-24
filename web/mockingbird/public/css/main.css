@@ -167,6 +167,59 @@ body {
     Page Content - Test history
 */
 
+.test-history { padding: 20px; }
+
+.test-history > table {
+    text-align: left;
+}
+
+.test-history > table > thead > tr > th {
+    padding-top: 1rem;
+    padding-right: 4rem;
+    border-bottom: 1px solid rgba(0,0,0,.16);
+
+    font-weight: 300;
+    color: #585858;
+}
+.test-history > table > tbody > tr > td {
+    padding-right: 4rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    vertical-align: baseline;
+}
+
+.test-history > table > tbody > tr.table-no-border > td {
+    border-bottom: none;
+}
+
+@media screen and (max-width: 1100px) {
+    .test-history > table > thead > tr > th {
+        padding-right: 3rem;
+    }
+    .test-history > table > tbody > tr > td {
+        padding-right: 3rem;
+    }
+}
+@media screen and (max-width: 1000px) {
+    .test-history > table > thead > tr > th {
+        padding-right: 2rem;
+    }
+    .test-history > table > tbody > tr > td {
+        padding-right: 2rem;
+    }
+}
+@media screen and (max-width: 850px) {
+    .test-history > table > thead > tr > th {
+        padding-right: 1rem;
+    }
+    .test-history > table > tbody > tr > td {
+        padding-right: 1rem;
+    }
+}
+
+
+
 /*
     Page Content - Test result page
 */

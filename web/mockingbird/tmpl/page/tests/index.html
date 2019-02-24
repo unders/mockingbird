@@ -1,5 +1,39 @@
 {{- define "content" }}
-    <h1>This is content on the tests/index page</h1>
+
+    {{$path := .Path.RunTest}}
+
+    <div class="test-history">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Suite</th>
+                <th>Status</th>
+                <th>State</th>
+                <th>Started</th>
+                <th>Duration</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{- range .TestResults -}}
+                <tr>
+                    <td><a href="{{.TestPath $path}}">{{.ShortID}}</a></td>
+                    <td>{{.TestSuite}}</td>
+                    <td>{{.Status}}</td>
+                    <td>{{.State}}</td>
+                    <td>{{.Started}}</td>
+                    <td>{{.RunTime}}</td>
+                </tr>
+            {{- end -}}
+            <tr class="table-no-border">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><a href="{{- .NextPage -}}">More</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 {{- end}}
-
-

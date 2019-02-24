@@ -41,6 +41,10 @@ func createHandler(h handler) http.Handler {
 			return
 		}
 
+		if notAuthorized(w, req) {
+			return
+		}
+
 		//
 		// All other Content-Type's are treated as HTML.
 		//
@@ -89,6 +93,17 @@ func createHandler(h handler) http.Handler {
 //
 // HTML Handlers
 //
+
+func notAuthorized(w http.ResponseWriter, r *http.Request) bool {
+	user, pass, _ := r.BasicAuth()
+
+	if "user" != user || "password" != pass {
+		w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+		http.Error(w, "Unauthorized.", http.StatusUnauthorized)
+		return true
+	}
+	return false
+}
 
 //
 func (h *handler) showDashboard(w http.ResponseWriter, req *http.Request) {

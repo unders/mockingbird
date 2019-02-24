@@ -5,6 +5,8 @@ Mockingbird is a system testing framework built for the serverless world.
 ## TODO
 * Use S3 Bucket as the database: store result as Json: bucket/{ stats.json | log-uuid.json }
 * Add tests for favicons handler
+* HTTPS
+* Authenticate
 
 ## Setup
 

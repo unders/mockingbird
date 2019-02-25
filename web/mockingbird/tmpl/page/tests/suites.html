@@ -6,7 +6,7 @@
                 <li>
                     <form action="{{$path}}" method="post">
                         <input type="hidden" name="test_suite" value="{{.}}">
-                        <button type="submit">{{.}}</button>
+                        <button type="submit" onclick="this.disabled=true;this.form.submit();">{{.}}</button>
                     </form>
                 </li>
             {{- end -}}

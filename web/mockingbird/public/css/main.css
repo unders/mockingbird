@@ -255,13 +255,13 @@ body {
 }
 
 button {
-    color: #ffffff;
+    color: #585858;
+    background-color: whitesmoke;
     cursor: pointer;
     padding: 10px 20px;
     margin: 10px;
     border: none;
     border-radius: 20px;
-    background-color: #3771E0;;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -270,8 +270,9 @@ button {
     font-size: 1.2rem;
 }
 button:hover {
-    background-color: #608EE7;
+    background-color: rgba(158,158,158,0.2);
     transition: height 0.3s ease-in-out, background-color 0.3s;
+    border-radius: 10px;
 }
 *:focus {
     outline: none;

@@ -4,6 +4,7 @@ require (
 	github.com/gobuffalo/packr/v2 v2.0.0-rc.13
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magefile/mage v1.7.1
+	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.8.0
 	go.opencensus.io v0.18.0
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect

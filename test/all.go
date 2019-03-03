@@ -6,10 +6,10 @@ import (
 	"github.com/magefile/mage/mg"
 )
 
-type Test mg.Namespace
+type All mg.Namespace
 
-// All tests all services
-func (Test) All() {
+// Test tests all services
+func (All) Test() {
 	mg.SerialDeps(
 		Google.Test,
 	)

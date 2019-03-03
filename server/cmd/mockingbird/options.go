@@ -9,11 +9,6 @@ import (
 
 // Options defined required fields for mockingbird
 type Options struct {
-	// From build script
-	Timestamp  string
-	CommitHash string
-	GitTag     string
-
 	Env mockingbird.Env
 
 	StartTime time.Time

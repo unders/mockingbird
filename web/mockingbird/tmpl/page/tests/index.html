@@ -34,7 +34,9 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><a href="{{- .NextPage -}}">More</a></td>
+                {{if .MoreResult }}
+                    <td><a href="{{- .NextPage -}}">More</a></td>
+                {{ end }}
             </tr>
             </tbody>
         </table>

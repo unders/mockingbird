@@ -3,6 +3,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
@@ -16,5 +18,9 @@ func (Mockingbird) Start() error {
 		Server.Build,
 	)
 
-	return sh.RunV("modd", "-f", "./tool/app/mockingbird/dev.conf")
+	if err := os.Chdir("test"); err != nil {
+		return err
+	}
+
+	return sh.RunV("modd", "-f", "../tool/app/mockingbird/dev.conf")
 }

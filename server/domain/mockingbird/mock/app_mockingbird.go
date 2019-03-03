@@ -72,9 +72,6 @@ func (m *AppMockingbird) Dashboard() (mockingbird.Dashboard, error) {
 			FullTestSuiteSuccessRate: 99,
 			FullTestSuiteRunCounter:  9840,
 
-			AverageTestSuiteRunTime:   55 * time.Second,
-			AverageTestSuiteQueueTime: 106 * time.Second,
-
 			SlowestTestSuiteRunTime: 255 * time.Second,
 			SlowestTestSuiteName:    TestAll,
 		},
@@ -178,10 +175,10 @@ func (m *AppMockingbird) listTests() *mockingbird.TestResults {
 	}
 }
 
-var testAllLogOutput = []byte(`
+var testAllLogOutput = `
 === RUN   TestSearch
 --- PASS: TestSearch (0.00s)
     search_test.go:9: doing the test...
 PASS
 ok  	github.com/unders/mockingbird/test/service/google	0.006s
-`)
+`

@@ -3,7 +3,6 @@ package app
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -31,10 +30,8 @@ func Create(o Options) (*Builder, error) {
 	}
 
 	b := Builder{
-		log: o.Logger,
-		// TODO: Change to real app when it is implemented
-		// app:     &Mockingbird{},
-		app:     &mock.AppMockingbird{Now: time.Now().UTC()},
+		log:     o.Logger,
+		app:     build([]mockingbird.TestSuite{"all:test", "google:test"}),
 		favicon: handler.Favicons(o.FaviconDir),
 		assets:  http.Dir(o.AssetDir),
 		tmpl:    tmpl,

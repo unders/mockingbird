@@ -14,11 +14,12 @@ import (
 )
 
 type handler struct {
-	Favicon      func(r *http.Request) (http.Handler, bool)
-	Assets       http.FileSystem
-	AssetsPrefix string
-	HTML         mockingbird.HTMLAdapter
-	Log          mockingbird.Log
+	Favicon       func(r *http.Request) (http.Handler, bool)
+	notAuthorized func(w http.ResponseWriter, r *http.Request) bool
+	Assets        http.FileSystem
+	AssetsPrefix  string
+	HTML          mockingbird.HTMLAdapter
+	Log           mockingbird.Log
 }
 
 func createHandler(h handler) http.Handler {
@@ -27,6 +28,10 @@ func createHandler(h handler) http.Handler {
 	assets := "/public/"
 	if h.AssetsPrefix != "" {
 		assets = h.AssetsPrefix
+	}
+
+	if h.notAuthorized == nil {
+		h.notAuthorized = notAuthorized
 	}
 
 	fs := http.StripPrefix(assets, http.FileServer(h.Assets))
@@ -41,7 +46,7 @@ func createHandler(h handler) http.Handler {
 			return
 		}
 
-		if notAuthorized(w, req) {
+		if h.notAuthorized(w, req) {
 			return
 		}
 
@@ -119,6 +124,7 @@ func (h *handler) listTests(w http.ResponseWriter, req *http.Request) {
 func (h *handler) showTest(w http.ResponseWriter, req *http.Request, path rest.Path) {
 	id := path.String(1, "")
 	code, b, err := h.HTML.ShowTest(mockingbird.ULID(id))
+
 	h.write(w, req, code, b, err)
 }
 

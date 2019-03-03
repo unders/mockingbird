@@ -271,6 +271,25 @@ button:active {
     border: none;
 }
 
+/*
+
+    Page error
+
+ */
+.error-content{
+    display: grid;
+    margin: 80px;
+    justify-content: center;
+    font-size: 2.0rem;
+}
+
+.error-description {
+    font-weight: 200;
+    padding: 40px;
+    background: #f1f1f1;
+    border-radius: 20px;
+}
+
 
 /*
     FOOTER

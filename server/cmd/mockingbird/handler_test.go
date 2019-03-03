@@ -36,9 +36,10 @@ func TestAPI(t *testing.T) {
 
 func testServer(html mockingbird.HTMLAdapter) *httptest.Server {
 	h := createHandler(handler{
-		Favicon: func(r *http.Request) (http.Handler, bool) { return nil, false },
-		HTML:    html,
-		Log:     &mock.Log{},
+		Favicon:       func(r *http.Request) (http.Handler, bool) { return nil, false },
+		notAuthorized: func(w http.ResponseWriter, r *http.Request) bool { return false },
+		HTML:          html,
+		Log:           &mock.Log{},
 	})
 
 	ts := httptest.NewServer(h)

@@ -10,6 +10,10 @@ type TestSuite string
 type Status string
 type State string
 
+const (
+	FullTestSuite TestSuite = "all:test"
+)
+
 // The possible statuses a test suite can have
 const (
 	QUEUED  Status = "queued"
@@ -41,14 +45,13 @@ type Stats struct {
 	LatestDoneFullTestSuiteState   State
 	LatestDoneFullTestSuiteRunTime time.Duration
 
-	TestSuiteSuccessRate float64
-	TestSuiteRunCounter  int
+	TestSuiteSuccessCounter float64
+	TestSuiteSuccessRate    float64
+	TestSuiteRunCounter     float64
 
-	FullTestSuiteSuccessRate float64
-	FullTestSuiteRunCounter  int
-
-	AverageTestSuiteRunTime   time.Duration
-	AverageTestSuiteQueueTime time.Duration
+	FullTestSuiteSuccessCounter float64
+	FullTestSuiteSuccessRate    float64
+	FullTestSuiteRunCounter     float64
 
 	SlowestTestSuiteRunTime time.Duration
 	SlowestTestSuiteName    TestSuite
@@ -68,7 +71,7 @@ type TestResult struct {
 	State     State
 	TestSuite TestSuite
 
-	Log    []byte
+	Log    string
 	LogURL string // URL to S3 fil
 
 	StartTime time.Time

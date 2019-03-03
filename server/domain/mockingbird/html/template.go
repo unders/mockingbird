@@ -22,6 +22,7 @@ const (
 	testResult      = "tests/show.html"
 	testResultsFile = "tests/index.html"
 	testSuitesFile  = "tests/suites.html"
+	errorFile       = "error.html"
 )
 
 // Assets files
@@ -106,8 +107,19 @@ type testResultsPage struct {
 	ReloadPath string
 	Path       *Path
 
+	MoreResult bool
+
 	NextPage    string
 	TestResults []mockingbird.TestResult
+}
+
+type errorPage struct {
+	CSS         string
+	Title       string
+	PageTitle   string
+	Description string
+
+	Path *Path
 }
 
 // NewReloadableTemplate returns html.Template
@@ -171,6 +183,8 @@ func (t *Template) ListTest(ts *mockingbird.TestResults) ([]byte, error) {
 		PageTitle:  "Test History",
 		Path:       &path,
 
+		MoreResult: len(ts.NextPageToken) != 0,
+
 		NextPage:    fmt.Sprintf("%s?page_token=%s", path.ListTests, ts.NextPageToken),
 		TestResults: ts.TestResults,
 	}
@@ -217,12 +231,42 @@ func (t *Template) ShowTestSuites(ts []mockingbird.TestSuite) ([]byte, error) {
 
 // ErrorNotFound returns error not found page
 func (t *Template) ErrorNotFound() []byte {
-	return []byte("404 Not Found")
+	const title = "Page Not Found - Mockingbird"
+
+	page := errorPage{
+		Title: title,
+		CSS:   cssFile,
+		Path:  &path,
+
+		PageTitle:   "Page Not Found",
+		Description: "The page might be gone due to a new deployment :).",
+	}
+	buf, err := t.tmpl.Execute(mainLayout, errorFile, page)
+	if err != nil {
+		return internalError(err)
+	}
+
+	return buf
 }
 
 // InvalidURL returns an invalid URL page
 func (t *Template) InvalidURL() []byte {
-	return []byte("Invalid URL")
+	const title = "Invalid URL - Mockingbird"
+
+	page := errorPage{
+		Title: title,
+		CSS:   cssFile,
+		Path:  &path,
+
+		PageTitle:   "Invalid URL",
+		Description: "You wrote an invalid URL, please try again...",
+	}
+	buf, err := t.tmpl.Execute(mainLayout, errorFile, page)
+	if err != nil {
+		return internalError(err)
+	}
+
+	return buf
 }
 
 //
@@ -231,5 +275,24 @@ func (t *Template) InvalidURL() []byte {
 
 // InternalError returns Internal Error Page
 func (t *Template) InternalError() []byte {
-	return []byte("Internal Error Page")
+	const title = "Internal Error - Mockingbird"
+
+	page := errorPage{
+		Title: title,
+		CSS:   cssFile,
+		Path:  &path,
+
+		PageTitle:   "Internal Error",
+		Description: "The server had an internal error.",
+	}
+	buf, err := t.tmpl.Execute(mainLayout, errorFile, page)
+	if err != nil {
+		return internalError(err)
+	}
+	return buf
+}
+
+func internalError(err error) []byte {
+	s := fmt.Sprintf("Internal Error %s", err)
+	return []byte(s)
 }

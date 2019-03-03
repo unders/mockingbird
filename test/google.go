@@ -11,5 +11,5 @@ type Google mg.Namespace
 
 // Test tests the google service
 func (Google) Test() error {
-	return sh.RunV("go", "test", "github.com/unders/mockingbird/test/service/google/...")
+	return sh.RunV("go", "test", "-count=1", "github.com/unders/mockingbird/test/service/google/...")
 }

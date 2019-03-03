@@ -22,7 +22,9 @@
     {{- end}}
 
     <div class="content">
-        {{- template "part/page-title" . }}
+        {{- block "page-title" . }}
+            {{- template "part/page-title" . }}
+        {{- end -}}
 
         {{- block "content" . }}
             override me inside page file

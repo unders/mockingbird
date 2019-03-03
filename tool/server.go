@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -65,11 +64,10 @@ func (Server) build() error {
 		gopath = path
 	}
 	mockingbird := fmt.Sprintf("%s/bin/mockingbird", gopath)
-	flags := fmt.Sprintf("-ldflags=%s", ldflags())
 	cmd := "github.com/unders/mockingbird/server/cmd/mockingbird"
 
-	fmt.Printf("go build -o %s %s %s\n", mockingbird, flags, cmd)
-	return sh.RunV("go", "build", "-o", mockingbird, flags, cmd)
+	fmt.Printf("go build -o %s %s \n", mockingbird, cmd)
+	return sh.RunV("go", "build", "-o", mockingbird, cmd)
 }
 
 //
@@ -82,31 +80,4 @@ func (Server) download() error {
 
 func (Server) root() error {
 	return os.Chdir("../")
-}
-
-func ldflags() string {
-	timestamp := time.Now().UTC().Format(time.RFC3339)
-	hash := hash()
-	tag := tag()
-	if tag == "" {
-		tag = "dev"
-	}
-	return fmt.Sprintf(`-X "main.timestamp=%s" `+
-		`-X "main.commitHash=%s" `+
-		`-X "main.gitTag=%s"`, timestamp, hash, tag)
-}
-
-// tag returns the git tag for the current branch or "" if none.
-func tag() string {
-	s, err := sh.Output("git", "describe", "--tags")
-	if err != nil {
-		fmt.Println("ingoring fatal error; we set tag=dev")
-	}
-	return s
-}
-
-// hash returns the git hash for the current repo or "" if none.
-func hash() string {
-	hash, _ := sh.Output("git", "rev-parse", "--short", "HEAD")
-	return hash
 }
